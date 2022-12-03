@@ -2,69 +2,68 @@
 <html lang="en">
 
 <head>
-  <meta charset="utf-8">
-  <meta content="width=device-width, initial-scale=1.0" name="viewport">
-  <title>Maundy - Bootstrap Coming Soon Template</title>
-  <meta content="" name="description">
-  <meta content="" name="keywords">
+    <meta charset="utf-8">
+    <meta content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Индивидуальный график</title>
 
-  <!-- Vendor CSS Files -->
-  <link href="static/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link href="static/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link href="static/css/style.css" rel="stylesheet">
 
-  <!-- Template Main CSS File -->
-  <link href="static/css/style.css" rel="stylesheet">
-
-  <!-- =======================================================
-  * Template Name: Maundy - v4.8.1
-  * Template URL: https://bootstrapmade.com/maundy-free-coming-soon-bootstrap-theme/
-  * Author: BootstrapMade.com
-  * License: https://bootstrapmade.com/license/
-  ======================================================== -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="static/js/info_teacher.js"></script>
+    <script src="static/json/info_teacher.json"></script>
+    <!-- =======================================================
+    * Template Name: Maundy - v4.8.1
+    * Template URL: https://bootstrapmade.com/maundy-free-coming-soon-bootstrap-theme/
+    * Author: BootstrapMade.com
+    * License: https://bootstrapmade.com/license/
+    ======================================================== -->
 </head>
 
 <body>
-
-  <!-- ======= Header ======= -->
-  <header id="header" class="d-flex align-items-center">
+<header id="header" class="d-flex align-items-center">
     <div class="container d-flex flex-column align-items-center">
 
-      <h1>Добро пожаловать</h1>
-      <h2>на сайт для создания индивидуального графика!</h2>
+        <h1>Добро пожаловать</h1>
+        <h2>на сайт для создания индивидуального графика!</h2>
 
+        <div class="subscribe">
+            <h4>Введите номер группы (ХХ.БХХ-мм):</h4>
+            <form action="/find_teacher" method="post" role="form" class="form_teacher">
+                <div class="subscribe-form">
+                    <input type="text" name="text" required><input type="submit" value="Сохранить">
+                </div>
+            </form>
+        </div>
 
-      <div class="subscribe">
-        <h4>Введите ФИО преподавателя:</h4>
-        <form action="/find_teacher" method="post" role="form" class="form_teacher">
-          <div class="subscribe-form">
-            <input type="text" name="text" required><input type="submit" value="Найти">
-          </div>
-        </form>
-      </div>
-
+        <div class="subscribe">
+            <h4>Введите ФИО преподавателя:</h4>
+            <form action="/find_teacher" method="post" role="form" class="form_teacher">
+                <div class="subscribe-form">
+                    <input type="text" name="text" required><input type="submit" value="Найти">
+                </div>
+            </form>
+        </div>
     </div>
-  </header><!-- End #header -->
+</header>
 
-    <section class="card-deck" text-align="center">
-  <div class="card text-center" style="width: 18rem;">
-  <div class="card-header">Преподаватель</div>
-  <div class="card-body">
-    <h5 class="card-title">Должность</h5>
-    <p class="card-text">Кафедра</p>
-  </div>
-    <button type="submit">Кнопка</button>
-</div>
-
-
-
-  <div  class="card text-center" style="width: 18rem;">
-    <div class="card-body">
-
-      <h5 class="card-title">Преподаватель</h5>
-      <p class="card-text">Должность, кафедра</p>
-      <button type="submit">Выбрать</button>
+<section class="d-flex align-items-center">
+    <div class="container d-flex flex-column align-items-center">
+        <div class="info_teacher">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">${full_name}</h5>
+                        <h4 class="card-text">${post}, ${department}</h4>
+                        <button type="submit" class="btn btn-outline-dark"><h4>Выбрать</h4></button>
+                    </div>
+                </div>
+            </div>
+            </div>
+        </div>
     </div>
-  </div>
-
 </section>
 </body>
 

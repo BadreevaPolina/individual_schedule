@@ -5,7 +5,7 @@ from urllib.request import urlopen
 import requests
 import json
 #from flask import jsonify, request
-import main
+from main import input_form
 
 cookie = {
     "_culture": "ru",
@@ -60,7 +60,7 @@ def find_teacher_index(soup, elem):
 
 if __name__ == '__main__':
     print("Введите ФИО нужного преподавателя")
-    user_input = main.input_form
+    user_input = input()
     name_list = user_input.split(sep=' ')
     surname = name_list[0]
 
@@ -76,6 +76,6 @@ if __name__ == '__main__':
             department = find_teacher_department(soup, elem)
             index = find_teacher_index(soup, elem)
             add_json(user_input, post, department, index)
-        write_json_file('info_teacher.json', choice)
+        write_json_file('static/json/info_teacher.json', choice)
     else:
         print("Ошибка. Такой преподаватель не найден. Попробуйте ещё раз.")
