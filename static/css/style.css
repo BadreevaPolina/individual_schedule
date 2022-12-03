@@ -10,7 +10,7 @@
 --------------------------------------------------------------*/
 body {
   font-family: "Open Sans", sans-serif;
-  color: #fff;
+  color: #000;
   background: url("../img/bg.jpg") top center no-repeat;
   background-size: cover;
   position: relative;
@@ -249,6 +249,9 @@ h6 {
   background: #24b7a4;
   border-color: #24b7a4;
 }
+/*--------------------------------------------------------------
+# Button
+--------------------------------------------------------------*/
 
 /*--------------------------------------------------------------
 # Navigation Menu
@@ -530,3 +533,5 @@ section {
 .section-title p {
   margin-bottom: 0;
 }
+
+
