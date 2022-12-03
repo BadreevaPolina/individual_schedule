@@ -203,41 +203,6 @@ h6 {
   background: #22ae9c;
 }
 
-#header .subscribe .error-message {
-  display: none;
-  color: #ed3c0d;
-  text-align: center;
-  padding: 15px;
-  font-weight: 600;
-}
-
-#header .subscribe .sent-message {
-  display: none;
-  color: #18d26e;
-  text-align: center;
-  padding: 15px;
-  font-weight: 600;
-}
-
-#header .subscribe .loading {
-  display: none;
-  text-align: center;
-  padding: 15px;
-}
-
-#header .subscribe .loading:before {
-  content: "";
-  display: inline-block;
-  border-radius: 50%;
-  width: 24px;
-  height: 24px;
-  margin: 0 10px -6px 0;
-  border: 3px solid #18d26e;
-  border-top-color: #eee;
-  -webkit-animation: animate-loading-notify 1s linear infinite;
-  animation: animate-loading-notify 1s linear infinite;
-}
-
 @-webkit-keyframes animate-loading-notify {
   0% {
     transform: rotate(0deg);
