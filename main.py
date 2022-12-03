@@ -1,5 +1,5 @@
+import os
 import sys
-
 from flask import Flask, render_template, request, redirect, url_for, jsonify
 from flask_bootstrap import Bootstrap
 import json
@@ -7,6 +7,8 @@ import json
 
 app = Flask(__name__)
 bootstrap = Bootstrap(app)
+
+input_form = ""
 
 
 @app.route("/")
@@ -17,7 +19,8 @@ def index():
 @app.route('/find_teacher', methods=["GET", "POST"])
 def teacher():
     result = jsonify(request.form.get("text"))
-    print(result.json)
+    input_form = result.json
+    os.system('find_teacher_json.py')
     return render_template('index.html')
 
 
