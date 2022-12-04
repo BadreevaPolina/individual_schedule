@@ -9,6 +9,18 @@
     <link href="static/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
     <link href="static/css/style.css" rel="stylesheet">
 
+    <script type="text/javascript" language="javascript" src="jquery-1.8.2.min.js"></script>
+    <script type="text/javascript" language="javascript" src="json/info_teacher.json"></script>
+
+    <script type="text/javascript">
+    $(document).ready(function(e) {
+         alert(jsonObject.start.count);
+    });
+
+
+
+
+    </script>
     <!-- =======================================================
     * Template Name: Maundy - v4.8.1
     * Template URL: https://bootstrapmade.com/maundy-free-coming-soon-bootstrap-theme/
@@ -25,6 +37,15 @@
         <h2>на сайт для создания индивидуального графика!</h2>
 
         <div class="subscribe">
+            <h4>Введите номер группы (ХХ.БХХ-мм):</h4>
+            <form action="/find_teacher" method="post" role="form" class="form_teacher">
+                <div class="subscribe-form">
+                    <input type="text" name="text" required><input type="submit" value="Сохранить">
+                </div>
+            </form>
+        </div>
+
+        <div class="subscribe">
             <h4>Введите ФИО преподавателя:</h4>
             <form action="/find_teacher" method="post" role="form" class="form_teacher">
                 <div class="subscribe-form">
@@ -32,25 +53,29 @@
                 </div>
             </form>
         </div>
+
     </div>
 </header>
 
-<section class="card-deck" text-align="center">
-    <div class="card text-center" style="width: 18rem;">
-        <div class="card-header">Преподаватель</div>
-        <div class="card-body">
-            <h5 class="card-title">Должность</h5>
-            <p class="card-text">Кафедра</p>
-        </div>
-        <button type="submit">Кнопка</button>
-    </div>
-    <div class="card text-center" style="width: 18rem;">
-        <div class="card-body">
-            <h5 class="card-title">Преподаватель</h5>
-            <p class="card-text">Должность, кафедра</p>
-            <button type="submit">Выбрать</button>
+<section class="d-flex align-items-center">
+    <div class="container d-flex flex-column align-items-center">
+        <div class="row">
+            {%
+            for i in range(0):
+            %}
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Фамилия Имя Отчество</h5>
+                        <h4 class="card-text">Должность, кафедра</h4>
+                        <button type="submit" class="btn btn-outline-dark"><h4>Выбрать</h4></button>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
         </div>
     </div>
 </section>
+
 </body>
 </html>
