@@ -13,12 +13,11 @@ body {
   color: #000;
   background: url("../img/bg.jpg") top center no-repeat;
   background-size: cover;
-  position: relative;
 }
 
 body::before {
   content: "";
-  position: absolute;
+  position: fixed;
   left: 0;
   right: 0;
   top: 0;
@@ -53,6 +52,10 @@ h6 {
 
 #main {
   position: relative;
+}
+
+h5 {
+    font-size: 2rem;
 }
 
 /*--------------------------------------------------------------
@@ -94,7 +97,7 @@ h6 {
 #header {
   position: relative;
   width: 100%;
-  padding: 262px 0;
+  padding: 200px 0;
   /* countdown */
 }
 
@@ -157,6 +160,7 @@ h6 {
 #header .subscribe {
   font-size: 15px;
   text-align: center;
+  margin-bottom: 40px;
 }
 
 #header .subscribe h4 {
@@ -250,9 +254,20 @@ h6 {
   border-color: #24b7a4;
 }
 /*--------------------------------------------------------------
-# Button
+# Card
 --------------------------------------------------------------*/
+.row {
+    width: 1500px;
+    text-align: center;
 
+}
+.card {
+    border-radius: 3rem;
+    margin-bottom: 40px;
+}
+ .card .btn btn-outline-dark {
+    font-size: 15px;
+ }
 /*--------------------------------------------------------------
 # Navigation Menu
 --------------------------------------------------------------*/
