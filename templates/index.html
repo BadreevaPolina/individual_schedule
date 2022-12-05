@@ -3,24 +3,16 @@
 
 <head>
     <meta charset="utf-8">
-    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <meta content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Индивидуальный график</title>
 
     <link href="static/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
     <link href="static/css/style.css" rel="stylesheet">
 
-    <script type="text/javascript" language="javascript" src="jquery-1.8.2.min.js"></script>
-    <script type="text/javascript" language="javascript" src="json/info_teacher.json"></script>
-
-    <script type="text/javascript">
-    $(document).ready(function(e) {
-         alert(jsonObject.start.count);
-    });
-
-
-
-
-    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="static/js/info_teacher.js"></script>
+    <script src="static/json/info_teacher.json"></script>
     <!-- =======================================================
     * Template Name: Maundy - v4.8.1
     * Template URL: https://bootstrapmade.com/maundy-free-coming-soon-bootstrap-theme/
@@ -53,29 +45,26 @@
                 </div>
             </form>
         </div>
-
     </div>
 </header>
 
 <section class="d-flex align-items-center">
     <div class="container d-flex flex-column align-items-center">
+        <div class="info_teacher">
         <div class="row">
-            {%
-            for i in range(0):
-            %}
             <div class="col-md-12">
                 <div class="card">
                     <div class="card-body">
-                        <h5 class="card-title">Фамилия Имя Отчество</h5>
-                        <h4 class="card-text">Должность, кафедра</h4>
+                        <h5 class="card-title">${full_name}</h5>
+                        <h4 class="card-text">${post}, ${department}</h4>
                         <button type="submit" class="btn btn-outline-dark"><h4>Выбрать</h4></button>
                     </div>
                 </div>
             </div>
-            {% endfor %}
+            </div>
         </div>
     </div>
 </section>
-
 </body>
+
 </html>

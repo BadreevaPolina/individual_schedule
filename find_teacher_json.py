@@ -76,6 +76,6 @@ if __name__ == '__main__':
             department = find_teacher_department(soup, elem)
             index = find_teacher_index(soup, elem)
             add_json(user_input, post, department, index)
-        write_json_file('templates/json/info_teacher.json', choice)
+        write_json_file('static/json/info_teacher.json', choice)
     else:
         print("Ошибка. Такой преподаватель не найден. Попробуйте ещё раз.")
