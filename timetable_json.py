@@ -2,15 +2,6 @@ import json
 from bs4 import BeautifulSoup
 import requests
 
-cookie = {
-    "_culture": "ru",
-    "value": "ru"
-}
-
-s = {}
-t = {}
-one_str = {}
-
 
 def add_json(day, time, place, data):
     if day:
@@ -22,7 +13,7 @@ def add_json(day, time, place, data):
 
 
 def write_json_file(file, data):
-    out_file = open(file, "w")
+    out_file = open(file, "w", encoding='utf8')
     json.dump(data, out_file, ensure_ascii=False, indent=4)
     out_file.close()
 
@@ -41,7 +32,7 @@ def find_day(panel):
     for day_str in days:
         only_day = day_str.get_text().split(',')
         day_param = only_day[0].strip()
-        return day_param
+        return day_param.lower()
 
 
 def find_time(panel):
@@ -63,19 +54,29 @@ def find_place(panel):
     return place_array
 
 
-if __name__ == '__main__':
+def main():
+    cookie = {
+        "_culture": "ru",
+        "value": "ru"
+    }
+    t = {}
     index_teacher = '2626'
     url_teacher = 'https://timetable.spbu.ru/EducatorEvents/' + index_teacher
     url_teacher_ru = requests.get(url_teacher, cookies=cookie).text
     html_teacher = BeautifulSoup(url_teacher_ru, "lxml")
 
     find_info(html_teacher, t)
-    write_json_file('templates/json/teacher.json', t)
+    write_json_file('static/json/teacher.json', t)
 
-    # 'https://timetable.spbu.ru/StudentGroupEvents/Primary/' + index_student
-    url_student = 'https://timetable.spbu.ru/MATH/StudentGroupEvents/Primary/334462'
+    s = {}
+    index_student = '334462'
+    url_student = 'https://timetable.spbu.ru/MATH/StudentGroupEvents/Primary/' + index_student
     url_student_ru = requests.get(url_student, cookies=cookie).text
     html_student = BeautifulSoup(url_student_ru, "lxml")
 
     find_info(html_student, s)
-    write_json_file('templates/json/student.json', s)
+    write_json_file('static/json/student.json', s)
+
+
+if __name__ == '__main__':
+    main()

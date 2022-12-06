@@ -7,10 +7,12 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Индивидуальный график</title>
 
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+
     <link href="static/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
     <link href="static/css/style.css" rel="stylesheet">
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
     <script src="static/js/info_teacher.js"></script>
     <script src="static/json/info_teacher.json"></script>
     <!-- =======================================================
@@ -30,9 +32,10 @@
 
         <div class="subscribe">
             <h4>Введите номер группы (ХХ.БХХ-мм):</h4>
-            <form action="/find_teacher" method="post" role="form" class="form_teacher">
+            <form action="/id_student" method="post" role="form" class="form_student">
                 <div class="subscribe-form">
-                    <input type="text" name="text" required><input type="submit" value="Сохранить">
+                    <input type="text" name="text" required>
+                    <button type="submit">Сохранить</button>
                 </div>
             </form>
         </div>
@@ -41,30 +44,42 @@
             <h4>Введите ФИО преподавателя:</h4>
             <form action="/find_teacher" method="post" role="form" class="form_teacher">
                 <div class="subscribe-form">
-                    <input type="text" name="text" required><input type="submit" value="Найти">
+                    <input type="text" name="text" required>
+                    <button type="submit">Сохранить</button>
                 </div>
             </form>
+        </div>
+
+        <div class="subscribe">
+            <div class="output">
+                <button type="submit" onclick="(document.getElementById('cards').style.display='block')">
+                    Получить данные
+                </button>
+            </div>
         </div>
     </div>
 </header>
 
 <section class="d-flex align-items-center">
     <div class="container d-flex flex-column align-items-center">
-        <div class="info_teacher">
-        <div class="row">
-            <div class="col-md-12">
-                <div class="card">
-                    <div class="card-body">
-                        <h5 class="card-title">${full_name}</h5>
-                        <h4 class="card-text">${post}, ${department}</h4>
-                        <button type="submit" class="btn btn-outline-dark"><h4>Выбрать</h4></button>
+        <div class="info_teacher" id="cards" style="display:none;">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">${full_name}</h5>
+                            <h4 class="card-text">${post}, ${department}</h4>
+                            <form action="/time" class="form-submit">
+                                <button type="submit" class="btn btn-outline-dark"><h4>Выбрать</h4></button>
+                            </form>
+                        </div>
                     </div>
                 </div>
-            </div>
             </div>
         </div>
     </div>
 </section>
+
 </body>
 
 </html>
