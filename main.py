@@ -24,5 +24,12 @@ def teacher():
     return render_template('index.html')
 
 
+@app.route('/find_student', methods=["GET", "POST"])
+def student():
+    result = jsonify(request.form.get("text"))
+    os.system('find_student_json.py')
+    return render_template('index.html')
+
+
 if __name__ == '__main__':
     app.run(port=5000)
