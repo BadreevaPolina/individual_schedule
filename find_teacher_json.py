@@ -24,7 +24,7 @@ def add_json(full_name, post, department, index):
 
 
 def write_json_file(file, data):
-    out_file = open(file, "w")
+    out_file = open(file, "w", encoding='utf8')
     json.dump(data, out_file, ensure_ascii=False, indent=4)
     out_file.close()
 
