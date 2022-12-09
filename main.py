@@ -24,7 +24,7 @@ def teacher():
     return render_template('index.html')
 
 
-@app.route('/find_student', methods=["GET", "POST"])
+@app.route('/id_student', methods=["GET", "POST"])
 def student():
     result = jsonify(request.form.get("text"))
     os.system('find_student_json.py')

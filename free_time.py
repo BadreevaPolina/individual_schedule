@@ -56,9 +56,9 @@ def estimate_time(end, begin, day, person):
 def check_place(end, begin, day, person):
     place = ["", ""]
     if person == "teacher":
-        f = open('templates/json/teacher.json')
+        f = open('static/json/teacher.json')
     else:
-        f = open('templates/json/student.json')
+        f = open('static/json/student.json')
     data = json.load(f)
     for i in data[day]:
         if end == i['time_end']:
@@ -199,10 +199,10 @@ def break_time(result_time):
 
 
 if __name__ == '__main__':
-    file_teacher = 'templates/json/teacher.json'
-    file_student = 'templates/json/student.json'
-    free = 'json/free_time.json'
-    answer = 'json/answer.json'
+    file_teacher = 'static/json/teacher.json'
+    file_student = 'static/json/student.json'
+    free = 'static/json/free_time.json'
+    answer = 'static/json/answer.json'
 
     free_time(file_teacher, "teacher")
     free_time(file_student, "student")

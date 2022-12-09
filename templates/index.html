@@ -30,7 +30,7 @@
 
         <div class="subscribe">
             <h4>Введите номер группы (ХХ.БХХ-мм):</h4>
-            <form action="/find_student" method="post" role="form" class="form_teacher">
+            <form action="/id_student" method="post" role="form" class="form_student">
                 <div class="subscribe-form">
                     <input type="text" name="text" required><input type="submit" value="Сохранить">
                 </div>
@@ -51,20 +51,21 @@
 <section class="d-flex align-items-center">
     <div class="container d-flex flex-column align-items-center">
         <div class="info_teacher">
-        <div class="row">
-            <div class="col-md-12">
-                <div class="card">
-                    <div class="card-body">
-                        <h5 class="card-title">${full_name}</h5>
-                        <h4 class="card-text">${post}, ${department}</h4>
-                        <button type="submit" class="btn btn-outline-dark"><h4>Выбрать</h4></button>
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">${full_name}</h5>
+                            <h4 class="card-text">${post}, ${department}</h4>
+                            <button type="submit" class="btn btn-outline-dark"><h4>Выбрать</h4></button>
+                        </div>
                     </div>
                 </div>
-            </div>
             </div>
         </div>
     </div>
 </section>
+
 </body>
 
 </html>

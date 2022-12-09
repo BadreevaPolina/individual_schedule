@@ -22,7 +22,7 @@ def add_json(day, time, place, data):
 
 
 def write_json_file(file, data):
-    out_file = open(file, "w")
+    out_file = open(file, "w", encoding='utf8')
     json.dump(data, out_file, ensure_ascii=False, indent=4)
     out_file.close()
 
@@ -70,7 +70,7 @@ if __name__ == '__main__':
     html_teacher = BeautifulSoup(url_teacher_ru, "lxml")
 
     find_info(html_teacher, t)
-    write_json_file('templates/json/teacher.json', t)
+    write_json_file('static/json/teacher.json', t)
 
     # 'https://timetable.spbu.ru/StudentGroupEvents/Primary/' + index_student
     url_student = 'https://timetable.spbu.ru/MATH/StudentGroupEvents/Primary/334462'
@@ -78,4 +78,4 @@ if __name__ == '__main__':
     html_student = BeautifulSoup(url_student_ru, "lxml")
 
     find_info(html_student, s)
-    write_json_file('templates/json/student.json', s)
+    write_json_file('static/json/student.json', s)
