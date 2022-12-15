@@ -10,8 +10,8 @@ $(function() {
         var post = item[i].post;
         var department = item[i].department;
         var indexs = item[i].index;
-        $(cards).find(".card-title").html(full_name + "   " + indexs + "  " );
-        $(cards).find(".card-text").html(post + ", " + department);
+        $(cards).find(".card-title").html(full_name);
+        $(cards).find(".card-text").html(department + ", " + post);
         $(cards).show()
         $(cards).appendTo($(".info_teacher"))
         }

@@ -191,6 +191,8 @@ def break_time(result_time):
             b = b + timedelta(hours=0, minutes=50)
         elif b == datetime.strptime("17:55", "%H:%M"):
             b = b + timedelta(hours=0, minutes=5)
+        elif b == datetime.strptime("09:30", "%H:%M"):
+            b = b + timedelta(hours=0, minutes=0)
         else:
             b = b + timedelta(hours=0, minutes=10)
         e = b + timedelta(hours=1, minutes=35)
