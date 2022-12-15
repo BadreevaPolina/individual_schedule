@@ -22,11 +22,11 @@ def add_json(full_name, post, department, index):
         choice['teacher'].append(one_str)
 
 
-
 def write_json_file(file, data):
     out_file = open(file, "w", encoding='utf8')
     json.dump(data, out_file, ensure_ascii=False, indent=4)
     out_file.close()
+
 
 def find_teacher(soup):
     teachers = []
