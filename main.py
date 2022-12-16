@@ -19,16 +19,19 @@ def index():
 @app.route('/find_teacher', methods=["GET", "POST"])
 def teacher():
     result = jsonify(request.form.get("text"))
-    input_form = result.json
-    os.system('find_teacher_json.py')
     return render_template('index.html')
 
 
 @app.route('/id_student', methods=["GET", "POST"])
 def student():
     result = jsonify(request.form.get("text"))
-    os.system('find_student_json.py')
+    print(result.json)
     return render_template('index.html')
+
+
+@app.route("/time")
+def timetable():
+    return render_template('table.html')
 
 
 if __name__ == '__main__':
