@@ -41,7 +41,7 @@ def find_day(panel):
     for day_str in days:
         only_day = day_str.get_text().split(',')
         day_param = only_day[0].strip()
-        return day_param
+        return day_param.lower()
 
 
 def find_time(panel):
