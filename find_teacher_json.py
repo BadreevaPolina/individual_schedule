@@ -5,7 +5,6 @@ from urllib.request import urlopen
 import requests
 import json
 #from flask import jsonify, request
-from main import input_form
 
 cookie = {
     "_culture": "ru",
