@@ -1,24 +1,13 @@
 import re
 
-
 from bs4 import BeautifulSoup
 import requests
 import json
 
 
-cookie = {
-    "_culture": "ru",
-    "value": "ru"
-}
-
-
-choice = {"teacher": []}
-one_str = {}
-
-
-def add_json(full_name, post, department, index):
-        one_str = {'full_name': full_name, 'post': post, 'department': department, 'index': index}
-        choice['teacher'].append(one_str)
+def add_json(full_name, post, department, index, choice):
+    one_str = {'full_name': full_name, 'post': post, 'department': department, 'index': index}
+    choice['teacher'].append(one_str)
 
 
 def write_json_file(file, data):
@@ -58,6 +47,13 @@ def find_teacher_index(soup, elem):
 
 
 def main_teacher(y):
+    cookie = {
+        "_culture": "ru",
+        "value": "ru"
+    }
+
+    choice = {"teacher": []}
+
     user_input = y
     name_list = user_input.split(sep=' ')
     surname = name_list[0]
@@ -71,5 +67,5 @@ def main_teacher(y):
         post = find_teacher_post(soup, teacher_index_array)
         department = find_teacher_department(soup, teacher_index_array)
         index = find_teacher_index(soup, teacher_index_array)
-        add_json(user_input, post, department, index)
+        add_json(user_input, post, department, index, choice)
         write_json_file('static/json/info_teacher.json', choice)
