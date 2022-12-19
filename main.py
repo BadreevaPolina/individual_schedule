@@ -3,6 +3,8 @@ from flask import Flask, render_template, request, redirect, url_for, jsonify
 from flask_bootstrap import Bootstrap
 import json
 
+import find_teacher_json
+
 
 app = Flask(__name__)
 bootstrap = Bootstrap(app)
@@ -16,7 +18,10 @@ def index():
 @app.route('/find_teacher', methods=["GET", "POST"])
 def teacher():
     result = jsonify(request.form.get("text"))
-    return render_template('index.html')
+    input_form = result.json
+    print(input_form)
+    find_teacher_json.main_teacher(input_form)
+    return render_template('index.html'), input_form
 
 
 @app.route('/id_student', methods=["GET", "POST"])
