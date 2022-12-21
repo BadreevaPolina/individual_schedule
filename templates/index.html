@@ -69,8 +69,9 @@
                         <div class="card-body">
                             <h5 class="card-title">${full_name}</h5>
                             <h4 class="card-text">${post}, ${department}</h4>
-                            <form action="/time" class="form-submit">
-                                <button type="submit" class="btn btn-outline-dark"><h4>Выбрать</h4></button>
+                            <form action="/time" method="post" class="form-submit">
+                                <input type="hidden" name="id" id="id">
+                                <button id="button" type="submit" class="btn btn-outline-dark"><h4>Выбрать</h4></button>
                             </form>
                         </div>
                     </div>
