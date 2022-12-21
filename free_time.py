@@ -27,7 +27,7 @@ def add_json_free_time(day, begin, end, places, person, d):
 
 def add_json_answer(day, time_begin, time_end, a):
     date = find_date(day)
-    date_title = datetime.strptime(date, "%Y-%m-%d").strftime("%m.%d.%Y")
+    date_title = datetime.strptime(date, "%Y-%m-%d").strftime("%d.%m.%Y")
     time_begin = date + "T" + time_begin + ":00.000"
     time_end = date + "T" + time_end + ":00.000"
     one_str = {'title': date_title, 'start': time_begin, 'end': time_end}
