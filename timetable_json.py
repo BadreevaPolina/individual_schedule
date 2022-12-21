@@ -60,7 +60,7 @@ def main_teacher(index):
         "value": "ru"
     }
     t = {}
-    url_teacher = 'https://timetable.spbu.ru/EducatorEvents/' + index
+    url_teacher = 'https://timetable.spbu.ru/WeekEducatorEvents/' + index
     url_teacher_ru = requests.get(url_teacher, cookies=cookie).text
     html_teacher = BeautifulSoup(url_teacher_ru, "lxml")
 
