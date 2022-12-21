@@ -54,29 +54,30 @@ def find_place(panel):
     return place_array
 
 
-def main():
+def main_teacher(index):
     cookie = {
         "_culture": "ru",
         "value": "ru"
     }
     t = {}
-    index_teacher = '2626'
-    url_teacher = 'https://timetable.spbu.ru/EducatorEvents/' + index_teacher
+    url_teacher = 'https://timetable.spbu.ru/EducatorEvents/' + index
     url_teacher_ru = requests.get(url_teacher, cookies=cookie).text
     html_teacher = BeautifulSoup(url_teacher_ru, "lxml")
 
     find_info(html_teacher, t)
     write_json_file('static/json/teacher.json', t)
 
+
+def main_student(index):
+    cookie = {
+        "_culture": "ru",
+        "value": "ru"
+    }
     s = {}
-    index_student = '334462'
-    url_student = 'https://timetable.spbu.ru/MATH/StudentGroupEvents/Primary/' + index_student
+    url_student = 'https://timetable.spbu.ru/MATH/StudentGroupEvents/Primary/' + index
     url_student_ru = requests.get(url_student, cookies=cookie).text
     html_student = BeautifulSoup(url_student_ru, "lxml")
 
     find_info(html_student, s)
     write_json_file('static/json/student.json', s)
 
-
-if __name__ == '__main__':
-    main()

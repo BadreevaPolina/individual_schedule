@@ -1,10 +1,12 @@
 
-from flask import Flask, render_template, request, redirect, url_for, jsonify
-from flask_bootstrap import Bootstrap
 import json
 
-import find_teacher_json
+from flask import Flask, render_template, request, jsonify
+from flask_bootstrap import Bootstrap
 
+import find_teacher_json
+import free_time
+import timetable_json
 
 app = Flask(__name__)
 bootstrap = Bootstrap(app)
@@ -19,20 +21,36 @@ def index():
 def teacher():
     result = jsonify(request.form.get("text"))
     input_form = result.json
-    print(input_form)
     find_teacher_json.main_teacher(input_form)
-    return render_template('index.html'), input_form
+    return render_template('index.html')
 
 
 @app.route('/id_student', methods=["GET", "POST"])
 def student():
     result = jsonify(request.form.get("text"))
-    print(result.json)
+    input_form = result.json
+    id_student = find_student_json.main_teacher(input_form)
+    timetable_json.main_teacher(id_student)
     return render_template('index.html')
+
+
+def one_teacher():
+    f = open('static/json/info_teacher.json', encoding='utf-8')
+    data = json.load(f)
+    res = data['teacher']
+    for i in res:
+        if i['index']:
+            return i['index']
+    f.close()
 
 
 @app.route("/time", methods=["GET", "POST"])
 def timetable():
+    result = request.form.get('id')
+    if result == "":
+        result = one_teacher()
+    timetable_json.main_teacher(result)
+    free_time.main()
     return render_template('table.html')
 
 
