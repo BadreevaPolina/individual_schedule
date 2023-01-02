@@ -32,12 +32,12 @@ body::before {
 }
 
 a {
-  color: #24b7a4;
+  color: #000;
   text-decoration: none;
 }
 
 a:hover {
-  color: #36d8c3;
+  color: #757174;
   text-decoration: none;
 }
 
@@ -97,7 +97,7 @@ h5 {
 #header {
   position: relative;
   width: 100%;
-  padding: 200px 0;
+  padding: 200px 0px 0px 0px;
   /* countdown */
 }
 
@@ -172,7 +172,7 @@ h5 {
 }
 
 #header .subscribe .subscribe-form {
-  min-width: 600px;
+  min-width: 450px;
   margin-top: 10px;
   background: #fff;
   padding: 6px 10px;
@@ -219,6 +219,16 @@ h5 {
   transition: 0.3s;
   border-radius: 50px;
   box-shadow: 0px 2px 15px rgba(0, 0, 0, 0.1);
+}
+
+#header .subscribe .mb-3 .form-label{
+
+  font-size: 20px;
+  font-weight: 600;
+  color: #fff;
+  position: relative;
+  padding-bottom: 12px;
+
 }
 
 /*--------------------------------------------------------------
