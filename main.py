@@ -18,20 +18,31 @@ def index():
     return render_template('index.html')
 
 
-@app.route('/find_teacher', methods=["GET", "POST"])
-def teacher():
-    result = jsonify(request.form.get("text"))
-    input_form = result.json
+def find_teacher(input_form):
     find_teacher_json.main_teacher(input_form)
     return render_template('index.html')
 
 
-@app.route('/id_student', methods=["GET", "POST"])
-def student():
-    result = jsonify(request.form.get("text"))
-    input_form = result.json
+def find_student(input_form):
     id_student = find_student_json.main_student(input_form)
     timetable_json.main_student(id_student)
+    return render_template('index.html')
+
+
+@app.route('/find', methods=["GET", "POST"])
+def find():
+    if request.method == 'POST':
+        student = request.form.get('student')
+        teacher = request.form.get('teacher')
+        # if not student:
+        #     flash('Группа студента не введена!')
+        # elif not teacher:
+        #     flash('ФИО преподавателя не введено!')
+        # else:
+        student_result = jsonify(student)
+        find_student(student_result.json)
+        teacher_result = jsonify(teacher)
+        find_teacher(teacher_result.json)
     return render_template('index.html')
 
 
