@@ -4,9 +4,9 @@
     var calendar = new FullCalendar.Calendar(calendarEl, {
       initialView: 'timeGridWeek',
       headerToolbar: {
-        left: '',
+        left: 'prev',
         center: 'title',
-        right: ''
+        right: 'next'
       },
       height: 'auto',
       editable: true,
