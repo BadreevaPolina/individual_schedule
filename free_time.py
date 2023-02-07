@@ -7,30 +7,39 @@ cookie = {
 }
 
 
-def find_date(day):
-    i = 0
-    weekDays = ("понедельник", "вторник", "среда", "четверг", "пятница", "суббота")
-    for i in range(len(weekDays)):
-        if day == weekDays[i]:
+def date_week(day_month):
+    year = datetime.now().year
+    date = str(year) + '-'
+    months = ['января', 'февраля', 'марта', 'апреля', 'мая', 'июня', 'июля', 'августa', 'сентября', 'октября', 'ноября',
+              'декабря']
+    for i in range(len(months)):
+        if months[i] == day_month.split(' ')[1]:
+            date = date + str(i + 1) + '-' + str(day_month.split(' ')[0])
+            date = datetime.strptime(date, "%Y-%m-%d")
             break
-    today_date = datetime.now().date()
-    date = today_date + timedelta(days=i - datetime.now().weekday())
-
     return str(date)
 
 
 def add_json_free_time(day, begin, end, places, person, d):
-    one_str = {'day': day, 'time_begin': end, 'place_begin': places[0],
+    one_str = {'day': day.split(', ')[0], 'day_month': day.split(', ')[1], 'time_begin': end, 'place_begin': places[0],
                'time_end': begin, 'place_end': places[1]}
     d[person].append(one_str)
 
 
-def add_json_answer(day, time_begin, time_end, a):
-    date = find_date(day)
-    date_title = datetime.strptime(date, "%Y-%m-%d").strftime("%d.%m.%Y")
-    time_begin = date + "T" + time_begin + ":00.000"
-    time_end = date + "T" + time_end + ":00.000"
-    one_str = {'title': date_title, 'start': time_begin, 'end': time_end}
+def add_json_answer(day_month, time_begin, time_end, a):
+    date = date_week(day_month)
+    date_title = datetime.strptime(date, "%Y-%m-%d %H:%M:%S")
+    title = date_title.strftime("%d.%m.%Y")
+
+    time_begin_format = datetime.strptime(time_begin, "%H:%M")
+    time_begin = date_title + timedelta(hours=time_begin_format.hour, minutes=time_begin_format.minute)
+    time_begin_str = time_begin.strftime("%Y-%m-%dT%H:%M:%S")
+
+    time_end_format = datetime.strptime(time_end, "%H:%M")
+    time_end = date_title + timedelta(hours=time_end_format.hour, minutes=time_end_format.minute)
+    time_end_str = time_end.strftime("%Y-%m-%dT%H:%M:%S")
+
+    one_str = {'title': title, 'start': time_begin_str, 'end': time_end_str}
     a.append(one_str)
 
 
@@ -91,7 +100,7 @@ def check_common_time(free, a):
     for i in write["teacher"]:
         day_check = False
         for j in write["student"]:
-            if j['day'] == i['day']:
+            if j['day_month'] == i['day_month']:
                 day_check = True
                 result_time = common_time(i['time_begin'], i['time_end'],
                                           j['time_begin'], j['time_end'])
@@ -99,12 +108,12 @@ def check_common_time(free, a):
                     result_place = compare_place(result_time, i, j)
                     if result_place != "":
                         result_time = break_time(result_place[1])
-                        add_json_answer(j['day'], result_time[0], result_time[1], a)
+                        add_json_answer(i['day_month'], result_time[0], result_time[1], a)
         if not day_check:
             result_time = common_time(i['time_begin'], i['time_end'],
                                       "09:30", "20:35")
             result_time = break_time(result_time)
-            add_json_answer(i['day'], result_time[0], result_time[1], a)
+            add_json_answer(i['day_month'], result_time[0], result_time[1], a)
     free_.close()
 
 
@@ -166,25 +175,43 @@ def begin_or_end_equals(result_time, i, j):
         return ""
 
 
+def change_begin_time(b):
+    if b == datetime.strptime("09:30", "%H:%M"):
+        b = b + timedelta(hours=0, minutes=0)
+    elif b == datetime.strptime("12:50", "%H:%M"):
+        b = b + timedelta(hours=0, minutes=50)
+    elif b == datetime.strptime("17:55", "%H:%M"):
+        b = b + timedelta(hours=0, minutes=5)
+    elif b == datetime.strptime("18:45", "%H:%M"):
+        b = b + timedelta(hours=0, minutes=15)
+    else:
+        b = b + timedelta(hours=0, minutes=10)
+    return b
+
+
+def change_end_time(e):
+    if e == datetime.strptime("11:15", "%H:%M"):
+        e = e - timedelta(hours=0, minutes=10)
+    elif e == datetime.strptime("13:40", "%H:%M"):
+        e = e - timedelta(hours=0, minutes=50)
+    elif e == datetime.strptime("15:25", "%H:%M"):
+        e = e - timedelta(hours=0, minutes=10)
+    elif e == datetime.strptime("17:10", "%H:%M"):
+        e = e - timedelta(hours=0, minutes=10)
+    elif e == datetime.strptime("20:35", "%H:%M"):
+        e = e - timedelta(hours=0, minutes=0)
+    else:
+        e = e - timedelta(hours=0, minutes=5)
+    return e
+
+
 def break_time(result_time):
     res = ["", ""]
     result_time = result_time.split("-")
     b = datetime.strptime(result_time[0], "%H:%M")
     e = datetime.strptime(result_time[1], "%H:%M")
-    if e - b >= timedelta(hours=1, minutes=50):
-        if b == datetime.strptime("18:45", "%H:%M"):
-            b = b + timedelta(hours=0, minutes=15)
-        elif b == datetime.strptime("12:50", "%H:%M"):
-            b = b + timedelta(hours=0, minutes=50)
-        elif b == datetime.strptime("17:55", "%H:%M"):
-            b = b + timedelta(hours=0, minutes=5)
-        elif b == datetime.strptime("09:30", "%H:%M"):
-            b = b + timedelta(hours=0, minutes=0)
-        else:
-            b = b + timedelta(hours=0, minutes=10)
-        e = b + timedelta(hours=1, minutes=35)
-    res[0] = b.strftime('%H:%M')
-    res[1] = e.strftime('%H:%M')
+    res[0] = change_begin_time(b).strftime('%H:%M')
+    res[1] = change_end_time(e).strftime('%H:%M')
     return res
 
 
