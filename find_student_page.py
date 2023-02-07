@@ -1,4 +1,3 @@
-import json
 from bs4 import BeautifulSoup
 import requests
 
@@ -17,13 +16,13 @@ def id_student(html_year_page, group):
 def current_year(html_year_page, group):
     groups = html_year_page.find_all(id='studentGroupsForCurrentYear')
     for g in groups:
-        number = id_student(g, group)
-        if number != "":
-            return number
+        index = id_student(g, group)
+        if index != "":
+            return index
     return ""
 
 
-def find_group(index_year, group):
+def parse_group(index_year, group):
     cookie = {
         "_culture": "ru",
         "value": "ru"
@@ -34,13 +33,24 @@ def find_group(index_year, group):
     return current_year(html_year_page, group)
 
 
+def find_group(a, group):
+    title = a['title'].split(", ")
+    for group_in_title in title:
+        if group == group_in_title:
+            href_year = a['href'].split('/')
+            return href_year[3]
+    return ""
+
+
 def find_year(html_main_page, group):
-    for a in html_main_page.find_all('a', href=True):
-        href_year = a['href'].split('/')
-        if len(href_year) == 4:
-            number = find_group(href_year[3], group)
-            if number != "":
-                return number
+    year_group = "20" + group.split(".Б")[0]
+    for a in html_main_page.find_all('a', href=True, title=True):
+        title_year = a.text.strip()
+        if title_year == year_group:
+            href_index = find_group(a, group)
+            if href_index != "":
+                parse = parse_group(href_index, group)
+                return parse
     return ""
 
 

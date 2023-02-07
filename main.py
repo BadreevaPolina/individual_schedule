@@ -4,7 +4,7 @@ import json
 from flask import Flask, render_template, request, jsonify
 from flask_bootstrap import Bootstrap
 
-import find_student_json
+import find_student_page
 import find_teacher_json
 import free_time
 import timetable_json
@@ -24,7 +24,7 @@ def find_teacher(input_form):
 
 
 def find_student(input_form):
-    id_student = find_student_json.main_student(input_form)
+    id_student = find_student_page.main_student(input_form)
     timetable_json.main_student(id_student)
     return render_template('index.html')
 
