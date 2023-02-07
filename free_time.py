@@ -7,30 +7,39 @@ cookie = {
 }
 
 
-def find_date(day):
-    i = 0
-    weekDays = ("понедельник", "вторник", "среда", "четверг", "пятница", "суббота")
-    for i in range(len(weekDays)):
-        if day == weekDays[i]:
+def date_week(day, day_month):
+    year = datetime.now().year
+    date = str(year) + '-'
+    months = ['января', 'февраля', 'марта', 'апреля', 'мая', 'июня', 'июля', 'августa', 'сентября', 'октября', 'ноября',
+              'декабря']
+    for i in range(len(months)):
+        if months[i] == day_month.split(' ')[1]:
+            date = date + str(i + 1) + '-' + str(day_month.split(' ')[0])
+            date = datetime.strptime(date, "%Y-%m-%d")
             break
-    today_date = datetime.now().date()
-    date = today_date + timedelta(days=i - datetime.now().weekday())
-
     return str(date)
 
 
 def add_json_free_time(day, begin, end, places, person, d):
-    one_str = {'day': day, 'time_begin': end, 'place_begin': places[0],
+    one_str = {'day': day.split(', ')[0], 'day_month': day.split(', ')[1], 'time_begin': end, 'place_begin': places[0],
                'time_end': begin, 'place_end': places[1]}
     d[person].append(one_str)
 
 
-def add_json_answer(day, time_begin, time_end, a):
-    date = find_date(day)
-    date_title = datetime.strptime(date, "%Y-%m-%d").strftime("%d.%m.%Y")
-    time_begin = date + "T" + time_begin + ":00.000"
-    time_end = date + "T" + time_end + ":00.000"
-    one_str = {'title': date_title, 'start': time_begin, 'end': time_end}
+def add_json_answer(day, day_month, time_begin, time_end, a):
+    date = date_week(day, day_month)
+    date_title = datetime.strptime(date, "%Y-%m-%d %H:%M:%S")
+    title = date_title.strftime("%d.%m.%Y")
+
+    time_begin_format = datetime.strptime(time_begin, "%H:%M")
+    time_begin = date_title + timedelta(hours=time_begin_format.hour, minutes=time_begin_format.minute)
+    time_begin_str = time_begin.strftime("%Y-%m-%dT%H:%M:%S")
+
+    time_end_format = datetime.strptime(time_end, "%H:%M")
+    time_end = date_title + timedelta(hours=time_end_format.hour, minutes=time_end_format.minute)
+    time_end_str = time_end.strftime("%Y-%m-%dT%H:%M:%S")
+
+    one_str = {'title': title, 'start': time_begin_str, 'end': time_end_str}
     a.append(one_str)
 
 
@@ -91,7 +100,7 @@ def check_common_time(free, a):
     for i in write["teacher"]:
         day_check = False
         for j in write["student"]:
-            if j['day'] == i['day']:
+            if j['day_month'] == i['day_month']:
                 day_check = True
                 result_time = common_time(i['time_begin'], i['time_end'],
                                           j['time_begin'], j['time_end'])
@@ -99,12 +108,12 @@ def check_common_time(free, a):
                     result_place = compare_place(result_time, i, j)
                     if result_place != "":
                         result_time = break_time(result_place[1])
-                        add_json_answer(j['day'], result_time[0], result_time[1], a)
+                        add_json_answer(j['day'], i['day_month'], result_time[0], result_time[1], a)
         if not day_check:
             result_time = common_time(i['time_begin'], i['time_end'],
                                       "09:30", "20:35")
             result_time = break_time(result_time)
-            add_json_answer(i['day'], result_time[0], result_time[1], a)
+            add_json_answer(i['day'], i['day_month'], result_time[0], result_time[1], a)
     free_.close()
 
 
