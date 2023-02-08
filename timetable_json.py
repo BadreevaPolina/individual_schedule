@@ -8,7 +8,7 @@ import requests
 def add_json(day, date, time, place, data):
     if day:
         data[day + ', ' + date] = []
-        for i in range(len(place)):
+        for i in range(len(time)):
             time[i] = time[i].split('\u2013')
             one_str = {'time_begin': time[i][0], 'time_end': time[i][1], 'place': place[i]}
             data[day + ', ' + date].append(one_str)
@@ -29,11 +29,11 @@ def find_info(soup, data):
     panels = soup.findAll(class_='panel panel-default')
     for panel in panels:
         title = find_day(panel)
-        if title is not None:
+        ts = find_time(panel)
+        ps = find_place(panel)
+        if title is not None and ts != []:
             d = title[0]
             date = title[1]
-            ts = find_time(panel)
-            ps = find_place(panel)
             add_json(d, date, ts, ps, data)
 
 
