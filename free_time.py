@@ -191,7 +191,6 @@ def break_time(result_time):
             b = b + timedelta(hours=0, minutes=0)
         else:
             b = b + timedelta(hours=0, minutes=10)
-        e = b + timedelta(hours=1, minutes=35)
     res[0] = b.strftime('%H:%M')
     res[1] = e.strftime('%H:%M')
     return res
