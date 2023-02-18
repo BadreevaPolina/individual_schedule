@@ -1,4 +1,3 @@
-
 import json
 
 from flask import Flask, render_template, request, jsonify
@@ -32,18 +31,19 @@ def find():
     if request.method == 'POST':
         student = request.form.get('student')
         teacher = request.form.get('teacher')
+        flag = 'flag' in request.form
 
         student_result = jsonify(student)
         find_student(student_result.json)
         teacher_result = jsonify(teacher)
         find_teacher(teacher_result.json)
-        if one_teacher_table() is not None:
+        if one_teacher_table(str(flag)) is not None:
             return render_template('table.html')
         else:
-            return render_template('index.html', student=student, teacher=teacher)
+            return render_template('index.html', student=student, teacher=teacher, flag=flag)
 
 
-def one_teacher_table():
+def one_teacher_table(flag):
     f = open('static/json/info_teacher.json', encoding='utf-8')
     data = json.load(f)
     res = data['teacher']
@@ -52,7 +52,7 @@ def one_teacher_table():
             if i['index']:
                 result = i['index']
                 timetable_json.main_teacher(result)
-                free_time.main()
+                free_time.main(flag)
                 return result
     f.close()
 
@@ -70,10 +70,11 @@ def one_teacher():
 @app.route("/time", methods=["GET", "POST"])
 def timetable():
     result = request.form.get('id')
+    flag = request.form.get('flag')
     if result == "":
         result = one_teacher()
     timetable_json.main_teacher(result)
-    free_time.main()
+    free_time.main(flag)
     return render_template('table.html')
 
 

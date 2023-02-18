@@ -91,6 +91,16 @@ h5 {
   opacity: 1;
 }
 
+
+.form-check-input {
+  width: 1.5em;
+  height: 1.5em;
+
+}
+.form-check-input[type=checkbox] {
+  border-radius: 0.55em;
+}
+
 /*--------------------------------------------------------------
 # Header
 --------------------------------------------------------------*/
@@ -113,6 +123,15 @@ h5 {
   color: #eee;
   margin-bottom: 40px;
   font-size: 22px;
+}
+
+#header label {
+    display: inline-block;
+    font-weight: 500;
+    color: #fff;
+    position: relative;
+    padding-bottom: 12px;
+    font-size: 20px;
 }
 
 #header .countdown {
@@ -237,11 +256,14 @@ h5 {
 .row {
     width: 1500px;
     text-align: center;
-
 }
 .card {
     border-radius: 3rem;
     margin-bottom: 40px;
+}
+.card button{
+    width: 100%;
+    border-radius: 3rem;
 }
 
 /*--------------------------------------------------------------
