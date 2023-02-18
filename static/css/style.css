@@ -237,11 +237,14 @@ h5 {
 .row {
     width: 1500px;
     text-align: center;
-
 }
 .card {
     border-radius: 3rem;
     margin-bottom: 40px;
+}
+.card button{
+    width: 100%;
+    border-radius: 3rem;
 }
 
 /*--------------------------------------------------------------

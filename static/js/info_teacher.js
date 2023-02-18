@@ -17,8 +17,8 @@ $(function() {
         } else {
             elms[i].value = item[i+1].index;
             }
-        $(cards).find(".card-title").html(full_name);
-        $(cards).find(".card-text").html(department + ", " + post);
+        $(cards).find(".full_name").html(full_name);
+        $(cards).find(".post_department").html(department + ", " + post);
         $(cards).show()
         $(cards).appendTo($(".info_teacher"))
         }
