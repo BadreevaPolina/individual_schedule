@@ -32,16 +32,29 @@ def find():
     if request.method == 'POST':
         student = request.form.get('student')
         teacher = request.form.get('teacher')
-        # if not student:
-        #     flash('Группа студента не введена!')
-        # elif not teacher:
-        #     flash('ФИО преподавателя не введено!')
-        # else:
+
         student_result = jsonify(student)
         find_student(student_result.json)
         teacher_result = jsonify(teacher)
         find_teacher(teacher_result.json)
-    return render_template('index.html')
+        if one_teacher_table() is not None:
+            return render_template('table.html')
+        else:
+            return render_template('index.html', student=student, teacher=teacher)
+
+
+def one_teacher_table():
+    f = open('static/json/info_teacher.json', encoding='utf-8')
+    data = json.load(f)
+    res = data['teacher']
+    if len(res) == 1:
+        for i in res:
+            if i['index']:
+                result = i['index']
+                timetable_json.main_teacher(result)
+                free_time.main()
+                return result
+    f.close()
 
 
 def one_teacher():
