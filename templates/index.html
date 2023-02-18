@@ -51,21 +51,19 @@
             <div class="row">
                 <div class="col-md-12">
                     <div class="card">
-                        <div class="card-body">
-                            <h5 class="card-title">${full_name}</h5>
-                            <h4 class="card-text">${post}, ${department}</h4>
-                            <form action="/time" method="post" class="form-submit">
+                        <form action="/time" method="post" class="form-submit">
+                            <button id="button" type="submit" class="btn btn-outline-dark stretched-link">
+                                <h5 class="full_name">${full_name}</h5>
+                                <h4 class="post_department">${post}, ${department}</h4>
                                 <input type="hidden" name="id" id="id">
-                                <button id="button" type="submit" class="btn btn-outline-dark stretched-link" ><h4>Выбрать</h4></button>
-                            </form>
-                        </div>
+                            </button>
+                        </form>
                     </div>
                 </div>
             </div>
         </div>
-
-
     </div>
+
 </header>
 </body>
 
