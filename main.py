@@ -20,13 +20,11 @@ def index():
 
 def find_teacher(input_form):
     find_teacher_json.main_teacher(input_form)
-    return render_template('index.html')
 
 
 def find_student(input_form):
     id_student = find_student_page.main_student(input_form)
     timetable_json.main_student(id_student)
-    return render_template('index.html')
 
 
 @app.route('/find', methods=["GET", "POST"])
