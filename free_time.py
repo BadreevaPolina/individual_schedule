@@ -26,19 +26,19 @@ def add_json_free_time(day, begin, end, places, person, d):
     d[person].append(one_str)
 
 
+def format_time(time, date_title):
+    time_format = datetime.strptime(time, "%H:%M")
+    time_change = date_title + timedelta(hours=time_format.hour, minutes=time_format.minute)
+    time_str = time_change.strftime("%Y-%m-%dT%H:%M:%S")
+    return time_str
+
+
 def add_json_answer(day_month, time_begin, time_end, a):
     date = date_week(day_month)
     date_title = datetime.strptime(date, "%Y-%m-%d %H:%M:%S")
     title = date_title.strftime("%d.%m.%Y")
-
-    time_begin_format = datetime.strptime(time_begin, "%H:%M")
-    time_begin = date_title + timedelta(hours=time_begin_format.hour, minutes=time_begin_format.minute)
-    time_begin_str = time_begin.strftime("%Y-%m-%dT%H:%M:%S")
-
-    time_end_format = datetime.strptime(time_end, "%H:%M")
-    time_end = date_title + timedelta(hours=time_end_format.hour, minutes=time_end_format.minute)
-    time_end_str = time_end.strftime("%Y-%m-%dT%H:%M:%S")
-
+    time_begin_str = format_time(time_begin, date_title)
+    time_end_str = format_time(time_end, date_title)
     one_str = {'title': title, 'start': time_begin_str, 'end': time_end_str}
     a.append(one_str)
 
@@ -235,4 +235,4 @@ def main(flag):
 
 
 if __name__ == '__main__':
-    main()
+    main("False")
