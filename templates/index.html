@@ -39,6 +39,12 @@
                     <h4>Введите ФИО преподавателя:</h4>
                     <input type="text" class="subscribe-form" name="teacher" value="{{teacher}}">
                 </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="flexCheck" name="flag"  value="{{flag}}">
+                    <label class="form-check-label"  for="flexCheck">
+                        Местоположение не важно
+                    </label>
+                </div>
                 <div class="output">
                     <button type="submit">
                         Получить данные
@@ -56,6 +62,7 @@
                                 <h5 class="full_name">${full_name}</h5>
                                 <h4 class="post_department">${post}, ${department}</h4>
                                 <input type="hidden" name="id" id="id">
+                                <input type="hidden" name="flag" value="{{flag}}">
                             </button>
                         </form>
                     </div>

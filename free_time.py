@@ -94,7 +94,7 @@ def check_place(end, begin, day, person):  # end first lesson, begin second less
     return place
 
 
-def check_common_time(free, a):
+def check_common_time(free, a, flag):
     free_ = open(free, encoding='utf-8')
     write = json.load(free_)
     for i in write["teacher"]:
@@ -105,9 +105,13 @@ def check_common_time(free, a):
                 result_time = common_time(i['time_begin'], i['time_end'],
                                           j['time_begin'], j['time_end'])
                 if result_time != "":
-                    result_place = compare_place(result_time, i, j)
-                    if result_place != "":
-                        result_time = break_time(result_place[1])
+                    if flag == "False":
+                        result_place_time = compare_place(result_time, i, j)
+                        if result_place_time != "":
+                            result_time = break_time(result_place_time[1])
+                            add_json_answer(i['day_month'], result_time[0], result_time[1], a)
+                    else:
+                        result_time = break_time(result_time)
                         add_json_answer(i['day_month'], result_time[0], result_time[1], a)
         if not day_check:
             result_time = common_time(i['time_begin'], i['time_end'],
@@ -215,7 +219,7 @@ def break_time(result_time):
     return res
 
 
-def main():
+def main(flag):
     file_teacher = 'static/json/teacher.json'
     file_student = 'static/json/student.json'
     free = 'static/json/free_time.json'
@@ -226,7 +230,7 @@ def main():
     free_time(file_student, "student", d)
     write_json_file(free, d)
     a = []
-    check_common_time(free, a)
+    check_common_time(free, a, flag)
     write_json_file(answer, a)
 
 
