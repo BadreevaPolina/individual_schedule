@@ -111,4 +111,3 @@ def main_student(index):
         html_student = BeautifulSoup(url_student_ru, "lxml")
         find_info(html_student, s)
     write_json_file('static/json/student.json', s)
-
