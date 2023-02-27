@@ -9,17 +9,15 @@
         right: 'next'
       },
       height: 'auto',
-      editable: true,
+      editable: false,
       selectable: false,
       selectMirror: true,
       nowIndicator: true,
-        eventSources: [
+      eventSources: [
     {
       url: 'static/json/answer.json'
-    }
-  ]
+    }]
     });
-
     calendar.render();
   });
 

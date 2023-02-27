@@ -37,8 +37,7 @@ def find():
         find_student(student_result.json)
         teacher_result = jsonify(teacher)
         find_teacher(teacher_result.json)
-
-        if one_teacher_table(jsonify(flag)) is not None:
+        if one_teacher_table(str(flag)) is not None:
             return render_template('table.html')
         else:
             return render_template('index.html', student=student, teacher=teacher, flag=flag)
