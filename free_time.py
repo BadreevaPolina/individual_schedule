@@ -49,29 +49,33 @@ def write_json_file(file, tables):
     out_file.close()
 
 
-def free_time(file, person, d):
+def free_time(file, person, d, flag):
     f = open(file, encoding='utf-8')
     data = json.load(f)
     for day in data:
         end = "09:30"
         for i in data[day]:
             begin = i['time_begin']
-            estimate_time(end, begin, day, person, d)  # end first lesson, begin second lesson
+            estimate_time(end, begin, day, person, d, flag)  # end first lesson, begin second lesson
             end = i['time_end']
-        estimate_time(end, "20:35", day, person, d)
+        estimate_time(end, "20:35", day, person, d, flag)
     f.close()
 
 
-def estimate_time(end, begin, day, person, d):
+def estimate_time(end, begin, day, person, d, flag):
     e = datetime.strptime(end, "%H:%M")
     b = datetime.strptime(begin, "%H:%M")
-    if b - e >= timedelta(hours=1, minutes=50):
-        places = check_place(end, begin, day, person)
-        if places[0] == places[1]:
+    if b - e >= timedelta(hours=1, minutes=45):
+        if flag == "True":
+            places = ["", ""]
             add_json_free_time(day, begin, end, places, person, d)
         else:
-            if b - e >= timedelta(hours=3, minutes=50):
+            places = check_place(end, begin, day, person)
+            if places[0] == places[1]:
                 add_json_free_time(day, begin, end, places, person, d)
+            else:
+                if b - e >= timedelta(hours=3, minutes=45):
+                    add_json_free_time(day, begin, end, places, person, d)
 
 
 def check_place(end, begin, day, person):  # end first lesson, begin second lesson
@@ -128,7 +132,7 @@ def common_time(b_t, e_t, b_s, e_s):  # begin_teacher....end_student
     t = datetime.strptime(e_t, "%H:%M")
     s = datetime.strptime(e_s, "%H:%M")
     end_common_time = min(t, s)
-    if end_common_time - begin_common_time >= timedelta(hours=1, minutes=50):
+    if end_common_time - begin_common_time >= timedelta(hours=1, minutes=45):
         res = begin_common_time.strftime('%H:%M') + "-" + end_common_time.strftime('%H:%M')
         return res
     return ""
@@ -144,7 +148,7 @@ def compare_place(result_time, i, j):  # проверить местополож
             if i['place_begin'] == j['place_begin']:
                 return [i['place_begin'], res]
             elif datetime.strptime(j['time_end'], "%H:%M") - datetime.strptime(j['time_begin'], "%H:%M") \
-                    >= timedelta(hours=5, minutes=50):
+                    >= timedelta(hours=5, minutes=45):
                 b = b + timedelta(hours=2, minutes=0)
                 e = e - timedelta(hours=2, minutes=0)
                 result_time = b.strftime('%H:%M') + "-" + e.strftime('%H:%M')
@@ -165,13 +169,13 @@ def begin_or_end_equals(result_time, i, j):
     res = b.strftime('%H:%M') + "-" + e.strftime('%H:%M')
     if i['place_begin'] == j['place_begin']:
         if datetime.strptime(j['time_end'], "%H:%M") - datetime.strptime(result_time[0], "%H:%M") \
-                >= timedelta(hours=3, minutes=50):
+                >= timedelta(hours=3, minutes=45):
             return [i['place_begin'], res]
         else:
             return ""
     elif i['place_end'] == j['place_end']:
         if datetime.strptime(result_time[1], "%H:%M") - datetime.strptime(j['time_begin'], "%H:%M") \
-                >= timedelta(hours=3, minutes=50):
+                >= timedelta(hours=3, minutes=45):
             return [i['place_end'], res]
         else:
             return ""
