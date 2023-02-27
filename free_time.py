@@ -33,13 +33,18 @@ def format_time(time, date_title):
     return time_str
 
 
-def add_json_answer(day_month, time_begin, time_end, a):
+def add_json_answer(day_month, time_begin, time_end, a, color):
     date = date_week(day_month)
     date_title = datetime.strptime(date, "%Y-%m-%d %H:%M:%S")
     title = date_title.strftime("%d.%m.%Y")
     time_begin_str = format_time(time_begin, date_title)
     time_end_str = format_time(time_end, date_title)
-    one_str = {'title': title, 'start': time_begin_str, 'end': time_end_str}
+    if color == "#cc6d33":
+        one_str = {'title': "Занятие у студента", 'start': time_begin_str, 'end': time_end_str, 'color': color}
+    elif color == "#3f4bc0":
+        one_str = {'title': "Занятие у преподавателя", 'start': time_begin_str, 'end': time_end_str, 'color': color}
+    else:
+        one_str = {'title': title, 'start': time_begin_str, 'end': time_end_str, 'color': color}
     a.append(one_str)
 
 
@@ -114,15 +119,15 @@ def check_common_time(free, a, flag):
                         result_place_time = compare_place(result_time, i, j)
                         if result_place_time != "":
                             result_time = break_time(result_place_time[1])
-                            add_json_answer(i['day_month'], result_time[0], result_time[1], a)
+                            add_json_answer(i['day_month'], result_time[0], result_time[1], a, color)
                     else:
                         result_time = break_time(result_time)
-                        add_json_answer(i['day_month'], result_time[0], result_time[1], a)
+                        add_json_answer(i['day_month'], result_time[0], result_time[1], a, color)
         if not day_check:
             result_time = common_time(i['time_begin'], i['time_end'],
                                       "09:30", "20:35")
             result_time = break_time(result_time)
-            add_json_answer(i['day_month'], result_time[0], result_time[1], a)
+            add_json_answer(i['day_month'], result_time[0], result_time[1], a, color)
     free_.close()
 
 
@@ -224,19 +229,34 @@ def break_time(result_time):
     return res
 
 
+def add_in_answer(file, a, color):
+    f = open(file, encoding='utf-8')
+    read = json.load(f)
+    for i in read:
+        for j in read[i]:
+            add_json_answer(i.split(', ')[1], j['time_begin'], j['time_end'], a, color)
+
+
+def check_answer_empty(a, file_teacher, file_student):
+    if not a:
+        add_in_answer(file_student, a, color="#cc6d33")
+        add_in_answer(file_teacher, a, color="#3f4bc0")
+
+
 def main(flag):
     file_teacher = 'static/json/teacher.json'
     file_student = 'static/json/student.json'
     free = 'static/json/free_time.json'
     answer = 'static/json/answer.json'
 
-    d = {"teacher": [], "student": []}
-    free_time(file_teacher, "teacher", d)
-    free_time(file_student, "student", d)
-    write_json_file(free, d)
-    a = []
-    check_common_time(free, a, flag)
-    write_json_file(answer, a)
+    free_time_mas = {"teacher": [], "student": []}
+    free_time(file_teacher, "teacher", free_time_mas, flag)
+    free_time(file_student, "student", free_time_mas, flag)
+    write_json_file(free, free_time_mas)
+    answer_mas = []
+    check_common_time(free, answer_mas, flag)
+    check_answer_empty(answer_mas, file_teacher, file_student)
+    write_json_file(answer, answer_mas)
 
 
 if __name__ == '__main__':
