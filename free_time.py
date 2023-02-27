@@ -84,8 +84,8 @@ def check_place(end, begin, day, person):  # end first lesson, begin second less
         f = open('static/json/teacher.json', encoding='utf-8')
     else:
         f = open('static/json/student.json', encoding='utf-8')
-    data = json.load(f)
-    for i in data[day]:
+    read = json.load(f)
+    for i in read[day]:
         if end == i['time_end']:
             place[0] = i['place']
         if begin == i['time_begin']:
@@ -99,11 +99,12 @@ def check_place(end, begin, day, person):  # end first lesson, begin second less
 
 
 def check_common_time(free, a, flag):
+    color = "#4e8bb1"
     free_ = open(free, encoding='utf-8')
-    write = json.load(free_)
-    for i in write["teacher"]:
+    read = json.load(free_)
+    for i in read["teacher"]:
         day_check = False
-        for j in write["student"]:
+        for j in read["student"]:
             if j['day_month'] == i['day_month']:
                 day_check = True
                 result_time = common_time(i['time_begin'], i['time_end'],
