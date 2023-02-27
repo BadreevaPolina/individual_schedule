@@ -26,21 +26,29 @@ def find_student(input_form):
     timetable_json.main_student(id_student)
 
 
+def count_teacher(teachers):
+    teachers = teachers.split(",")
+    for teacher in teachers:
+        teacher_result = jsonify(teacher)
+        find_teacher(teacher_result.json)
+
+
 @app.route('/find', methods=["GET", "POST"])
 def find():
     if request.method == 'POST':
         student = request.form.get('student')
         teacher = request.form.get('teacher')
-        flag = 'flag' in request.form
+        flag_place = 'flag_place' in request.form
 
         student_result = jsonify(student)
         find_student(student_result.json)
         teacher_result = jsonify(teacher)
         find_teacher(teacher_result.json)
-        if one_teacher_table(str(flag)) is not None:
+        if one_teacher_table(str(flag_place)) is not None:
             return render_template('table.html')
         else:
-            return render_template('index.html', student=student, teacher=teacher, flag=flag)
+            return render_template('index.html', student=student, teacher=teacher, flag_place=flag_place,
+                                   checkbox_checked="checked" if flag_place else "")
 
 
 def one_teacher_table(flag):
@@ -70,7 +78,7 @@ def one_teacher():
 @app.route("/time", methods=["GET", "POST"])
 def timetable():
     result = request.form.get('id')
-    flag = request.form.get('flag')
+    flag = request.form.get('flag_place')
     if result == "":
         result = one_teacher()
     timetable_json.main_teacher(result)

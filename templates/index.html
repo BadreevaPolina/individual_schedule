@@ -33,15 +33,16 @@
             <form action="/find" method="post" role="form">
                 <div class="mb-3">
                     <h4>Введите номер группы (ХХ.YХХ-мм):</h4>
-                    <input type="text" class="subscribe-form" name="student" value="{{student}}">
+                    <input type="text" class="subscribe-form" name="student" autofocus="autofocus" value="{{student}}">
                 </div>
                 <div class="mb-3">
                     <h4>Введите ФИО преподавателя:</h4>
                     <input type="text" class="subscribe-form" name="teacher" value="{{teacher}}">
                 </div>
                 <div class="form-check">
-                    <input class="form-check-input" type="checkbox" id="flexCheck" name="flag"  value="{{flag}}">
-                    <label class="form-check-label"  for="flexCheck">
+                    <input class="form-check-input" type="checkbox" id="flexCheck" name="flag_place" {{checkbox_checked}}
+                           value="{{flag}}">
+                    <label class="form-check-label" for="flexCheck">
                         Местоположение не важно
                     </label>
                 </div>
