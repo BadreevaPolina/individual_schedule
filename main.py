@@ -40,7 +40,8 @@ def find():
         if one_teacher_table(str(flag)) is not None:
             return render_template('table.html')
         else:
-            return render_template('index.html', student=student, teacher=teacher, flag=flag)
+            return render_template('index.html', student=student, teacher=teacher, flag=flag,
+                                   checkbox_checked="checked" if flag else "")
 
 
 def one_teacher_table(flag):
@@ -70,7 +71,7 @@ def one_teacher():
 @app.route("/time", methods=["GET", "POST"])
 def timetable():
     result = request.form.get('id')
-    flag = request.form.get('flag')
+    flag = request.form.get('flag_place')
     if result == "":
         result = one_teacher()
     timetable_json.main_teacher(result)

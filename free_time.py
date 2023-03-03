@@ -116,18 +116,18 @@ def check_common_time(free, a, flag):
                                           j['time_begin'], j['time_end'])
                 if result_time != "":
                     if flag == "False":
-                        result_place_time = compare_place(result_time, i, j)
-                        if result_place_time != "":
-                            result_time = break_time(result_place_time[1])
-                            add_json_answer(i['day_month'], result_time[0], result_time[1], a, color)
+                        new_place, new_time = compare_place(result_time, i, j)
+                        if new_time != "":
+                            time_begin, time_end = break_time(new_time)
+                            add_json_answer(i['day_month'], time_begin, time_end, a, color)
                     else:
-                        result_time = break_time(result_time)
-                        add_json_answer(i['day_month'], result_time[0], result_time[1], a, color)
+                        time_begin, time_end = break_time(result_time)
+                        add_json_answer(i['day_month'], time_begin, time_end, a, color)
         if not day_check:
             result_time = common_time(i['time_begin'], i['time_end'],
                                       "09:30", "20:35")
-            result_time = break_time(result_time)
-            add_json_answer(i['day_month'], result_time[0], result_time[1], a, color)
+            time_begin, time_end = break_time(result_time)
+            add_json_answer(i['day_month'], time_begin, time_end, a, color)
     free_.close()
 
 
@@ -144,7 +144,7 @@ def common_time(b_t, e_t, b_s, e_s):  # begin_teacher....end_student
     return ""
 
 
-def compare_place(result_time, i, j):  # проверить местоположение, teacher - i, student - j
+def compare_place(result_time, i, j):  # teacher - i, student - j
     result_time = result_time.split("-")
     b = datetime.strptime(result_time[0], "%H:%M")
     e = datetime.strptime(result_time[1], "%H:%M")
@@ -152,15 +152,15 @@ def compare_place(result_time, i, j):  # проверить местополож
     if i['place_begin'] == i['place_end']:
         if j['place_begin'] == j['place_end']:
             if i['place_begin'] == j['place_begin']:
-                return [i['place_begin'], res]
+                return i['place_begin'], res
             elif datetime.strptime(j['time_end'], "%H:%M") - datetime.strptime(j['time_begin'], "%H:%M") \
                     >= timedelta(hours=5, minutes=45):
                 b = b + timedelta(hours=2, minutes=0)
                 e = e - timedelta(hours=2, minutes=0)
                 result_time = b.strftime('%H:%M') + "-" + e.strftime('%H:%M')
-                return [i['place_begin'], result_time]
+                return i['place_begin'], result_time
             else:
-                return ""
+                return "", ""
         else:
             return begin_or_end_equals(result_time, i, j)
     else:
@@ -176,17 +176,17 @@ def begin_or_end_equals(result_time, i, j):
     if i['place_begin'] == j['place_begin']:
         if datetime.strptime(j['time_end'], "%H:%M") - datetime.strptime(result_time[0], "%H:%M") \
                 >= timedelta(hours=3, minutes=45):
-            return [i['place_begin'], res]
+            return i['place_begin'], res
         else:
-            return ""
+            return "", ""
     elif i['place_end'] == j['place_end']:
         if datetime.strptime(result_time[1], "%H:%M") - datetime.strptime(j['time_begin'], "%H:%M") \
                 >= timedelta(hours=3, minutes=45):
-            return [i['place_end'], res]
+            return i['place_end'], res
         else:
-            return ""
+            return "", ""
     else:
-        return ""
+        return "", ""
 
 
 def change_begin_time(b):
