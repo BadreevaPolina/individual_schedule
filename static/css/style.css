@@ -93,8 +93,8 @@ h5 {
 
 
 .form-check-input {
-  width: 1.5em;
-  height: 1.5em;
+  width: 1.7em;
+  height: 1.7em;
 
 }
 .form-check-input[type=checkbox] {
@@ -131,7 +131,7 @@ h5 {
     color: #fff;
     position: relative;
     padding-bottom: 12px;
-    font-size: 20px;
+    font-size: 25px;
 }
 
 #header .countdown {
@@ -183,7 +183,7 @@ h5 {
 }
 
 #header .subscribe h4 {
-  font-size: 20px;
+  font-size: 25px;
   font-weight: 600;
   color: #fff;
   position: relative;
@@ -191,10 +191,10 @@ h5 {
 }
 
 #header .subscribe .subscribe-form {
-  min-width: 450px;
+  min-width: 515px;
   margin-top: 10px;
   background: #fff;
-  padding: 6px 10px;
+  padding: 10px 10px;
   position: relative;
   border-radius: 50px;
   text-align: left;
@@ -231,7 +231,7 @@ h5 {
   bottom: 0;
   border: 0;
   background: none;
-  font-size: 20px;
+  font-size: 24px;
   padding: 5px 20px;
   background: #24b7a4;
   color: #fff;
