@@ -1,11 +1,6 @@
 import json
 from datetime import datetime, timedelta
 
-cookie = {
-    "_culture": "ru",
-    "value": "ru"
-}
-
 
 def date_week(day_month):
     year = datetime.now().year
