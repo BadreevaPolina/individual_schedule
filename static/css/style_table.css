@@ -1,0 +1,19 @@
+  body {
+    margin: 40px 10px;
+    padding: 0;
+    font-family: Arial, Helvetica Neue, Helvetica, sans-serif;
+    font-size: 20px;
+    background: url("../img/bg.jpg") top center no-repeat;
+    background-size: cover;
+  }
+
+  #calendar {
+    max-width: 2000px;
+    margin: 15px auto;
+    font-size: 25px;
+    background: #ffffff;
+  }
+
+  .fc .fc-timegrid-col.fc-day-today {
+    background-color: #ffffff;
+}

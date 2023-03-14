@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Индивидуальный график</title>
+
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+
+    <link href="static/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link href="static/css/style.css" rel="stylesheet">
+
+    <script src="static/js/info_teacher.js"></script>
+    <!-- =======================================================
+    * Template Name: Maundy - v4.8.1
+    * Template URL: https://bootstrapmade.com/maundy-free-coming-soon-bootstrap-theme/
+    * Author: BootstrapMade.com
+    * License: https://bootstrapmade.com/license/
+    ======================================================== -->
+</head>
+
+<body>
+<header id="header" class="d-flex align-items-center">
+    <div class="container d-flex flex-column align-items-center">
+
+        <h1>Добро пожаловать</h1>
+        <h2>на сайт для создания индивидуального графика!</h2>
+
+        <div class="subscribe">
+            <form action="/find" method="post" role="form">
+                <div class="mb-3">
+                    <h4>Введите номер группы (ХХ.YХХ-мм):</h4>
+                    <input type="text" class="subscribe-form" name="student" autofocus="autofocus" value="{{student}}">
+                </div>
+                <div class="mb-3">
+                    <h4>Введите ФИО преподавателя:</h4>
+                    <input type="text" class="subscribe-form" name="teacher" value="{{teacher}}">
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="flexCheck" name="flag_place" {{checkbox_checked}}
+                           value="{{flag}}">
+                    <label class="form-check-label" for="flexCheck">
+                        Местоположение не важно
+                    </label>
+                </div>
+                <div class="output">
+                    <button type="submit">
+                        Получить данные
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <div class="info_teacher" id="cards">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="card">
+                        <form action="/time" method="post" class="form-submit">
+                            <button id="button" type="submit" class="btn btn-outline-dark stretched-link">
+                                <h5 class="full_name">${full_name}</h5>
+                                <h4 class="post_department">${post}, ${department}</h4>
+                                <input type="hidden" name="id" id="id">
+                                <input type="hidden" name="flag" value="{{flag}}">
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</header>
+</body>
+
+</html>
