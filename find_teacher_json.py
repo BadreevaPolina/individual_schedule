@@ -7,7 +7,7 @@ import requests
 
 def add_json(full_name, post, department, index, choice):
     one_str = {'full_name': full_name, 'post': post, 'department': department, 'index': index}
-    choice['teacher'].append(one_str)
+    choice["teacher"].append(one_str)
 
 
 def write_json_file(file, data):
@@ -20,19 +20,26 @@ def find_teachers(soup, user_input):
     teacher_name = soup.find_all("div", class_="col-sm-3")
     for elem, name in enumerate(teacher_name):
         name = teacher_name[elem].text.strip()
-        if user_input == name:
+        if user_input == name[: len(user_input)].lower():
             teachers.append((name, elem))
+        else:
+            user_target = user_input.split(" ")
+            users = name.lower().split(" ")
+            if len(user_target) == len(users):
+                if user_target[0] == users[0] and user_target[1] == users[1][: len(user_target[1])] \
+                        and user_target[2] == users[2][: len(user_target[2])]:
+                    teachers.append((name, elem))
     return teachers
 
 
 def find_teacher_post(soup, elem):
     post = soup.find_all("div", class_="col-sm-2")
-    return post[elem].get_text().strip()
+    return post[elem].get_text().strip().replace("\r\n", ", ")
 
 
 def find_teacher_department(soup, elem):
     department = soup.find_all("div", class_="col-sm-7")
-    return department[elem].get_text().strip()
+    return department[elem].get_text().strip().replace("\r\n", ", ")
 
 
 def find_teacher_index(soup, elem):
@@ -46,14 +53,13 @@ def find_teacher_index(soup, elem):
     return ""
 
 
-def find_info_teachers(teachers, soup, user_input, choice):
+def find_info_teachers(teachers, soup, choice):
     for teacher in teachers:
         teacher_index_array = teacher[1]
         post = find_teacher_post(soup, teacher_index_array)
         department = find_teacher_department(soup, teacher_index_array)
         index = find_teacher_index(soup, teacher_index_array)
-        add_json(user_input, post, department, index, choice)
-        write_json_file('static/json/info_teacher.json', choice)
+        add_json(teacher[0], post, department, index, choice)
 
 
 def main_teacher(teacher_target):
@@ -63,17 +69,19 @@ def main_teacher(teacher_target):
     }
 
     choice = {"teacher": []}
+    teachers_target = teacher_target.split(",")
+    for teacher in teachers_target:
+        user_input = teacher.lower().strip()
+        name_list = user_input.split(sep=' ')
+        surname = name_list[0]
+        url = 'https://timetable.spbu.ru/EducatorEvents/Index?q=' + surname
+        wbdata = requests.get(url, cookies=cookie, timeout=10).text
+        soup = BeautifulSoup(wbdata, 'lxml')
 
-    user_input = teacher_target
-    name_list = user_input.split(sep=' ')
-    surname = name_list[0]
-    url = 'https://timetable.spbu.ru/EducatorEvents/Index?q=' + surname
-    wbdata = requests.get(url, cookies=cookie, timeout=10).text
-    soup = BeautifulSoup(wbdata, 'lxml')
-
-    teachers = find_teachers(soup, user_input)
-    find_info_teachers(teachers, soup, user_input, choice)
+        teachers = find_teachers(soup, user_input)
+        find_info_teachers(teachers, soup, choice)
+    write_json_file('static/json/info_teacher.json', choice)
 
 
 if __name__ == '__main__':
-    main_teacher("Смирнов Михаил Николаевич")
+    main_teacher("Смирнов Михаил Николаевич, Кириленко Я А")

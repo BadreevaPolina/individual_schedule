@@ -183,7 +183,7 @@ h5 {
 }
 
 #header .subscribe h4 {
-  font-size: 25px;
+  font-size: 30px;
   font-weight: 600;
   color: #fff;
   position: relative;
@@ -191,7 +191,7 @@ h5 {
 }
 
 #header .subscribe .subscribe-form {
-  min-width: 515px;
+  min-width: 555px;
   margin-top: 10px;
   background: #fff;
   padding: 10px 10px;

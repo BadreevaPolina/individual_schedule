@@ -5,13 +5,13 @@ from bs4 import BeautifulSoup
 import requests
 
 
-def add_json(day, date, time, place, data):
+def add_json(day, date, time, place, data, num):
     if day:
-        data[day + ', ' + date] = []
+        data[num][day + ', ' + date] = []
         for i, time1 in enumerate(time):
             time1 = time1.split('\u2013')
             one_str = {'time_begin': time1[0], 'time_end': time1[1], 'place': place[i]}
-            data[day + ', ' + date].append(one_str)
+            data[num][day + ', ' + date].append(one_str)
 
 
 def write_json_file(file, data):
@@ -24,7 +24,7 @@ def empty_file(file):
         file.close()
 
 
-def find_info(soup, data):
+def find_info(soup, data, i):
     panels = soup.findAll(class_='panel panel-default')
     for panel in panels:
         title = find_day(panel)
@@ -33,7 +33,7 @@ def find_info(soup, data):
         if title is not None and times:
             day = title[0]
             date = title[1]
-            add_json(day, date, times, places, data)
+            add_json(day, date, times, places, data, str(i))
 
 
 def find_day(panel):
@@ -81,39 +81,47 @@ def few_weeks():
     return weeks
 
 
-def main_teacher(index):
+def main_teacher(index, name):
     empty_file('static/json/teacher.json')
     cookie = {
         "_culture": "ru",
         "value": "ru"
     }
     teacher_mas = {}
-    weeks = few_weeks()
-    for week in weeks:
-        url_teacher = 'https://timetable.spbu.ru/WeekEducatorEvents/' + index + '/' + str(week)
-        url_teacher_ru = requests.get(url_teacher, cookies=cookie, timeout=10).text
-        html_teacher = BeautifulSoup(url_teacher_ru, "lxml")
-        find_info(html_teacher, teacher_mas)
+    teachers_index = index.split(',')
+    for i, index in enumerate(teachers_index):
+        if index != '' and index != ' ':
+            teacher_mas[name[i]] = {}
+            weeks = few_weeks()
+            for week in weeks:
+                url_teacher = 'https://timetable.spbu.ru/WeekEducatorEvents/' + index.strip() + '/' + str(week)
+                url_teacher_ru = requests.get(url_teacher, cookies=cookie, timeout=10).text
+                html_teacher = BeautifulSoup(url_teacher_ru, "lxml")
+                find_info(html_teacher, teacher_mas, name[i])
     write_json_file('static/json/teacher.json', teacher_mas)
 
 
-def main_student(index):
+def main_student(index, name):
     empty_file('static/json/student.json')
     cookie = {
         "_culture": "ru",
         "value": "ru"
     }
     student_mas = {}
-    weeks = few_weeks()
-    for week in weeks:
-        url_student = 'https://timetable.spbu.ru/MATH/StudentGroupEvents/Primary/'\
-                      + index + '/' + str(week)
-        url_student_ru = requests.get(url_student, cookies=cookie,timeout=10).text
-        html_student = BeautifulSoup(url_student_ru, "lxml")
-        find_info(html_student, student_mas)
+    student_index = index.split(',')
+    for i, index in enumerate(student_index):
+        if index != '' and index != ' ':
+            student_mas[name[i]] = {}
+            weeks = few_weeks()
+            for week in weeks:
+                url_student = 'https://timetable.spbu.ru/MATH/StudentGroupEvents/Primary/'\
+                          + index + '/' + str(week)
+                url_student_ru = requests.get(url_student, cookies=cookie, timeout=10).text
+                html_student = BeautifulSoup(url_student_ru, "lxml")
+                find_info(html_student, student_mas, name[i])
     write_json_file('static/json/student.json', student_mas)
 
 
 if __name__ == '__main__':
-    main_student("334764")
-    main_teacher("1446")
+    main_student("334764,334733,")
+    main_teacher("2690, 12564, ")

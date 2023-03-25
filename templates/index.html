@@ -12,8 +12,6 @@
 
     <link href="static/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
     <link href="static/css/style.css" rel="stylesheet">
-
-    <script src="static/js/info_teacher.js"></script>
     <!-- =======================================================
     * Template Name: Maundy - v4.8.1
     * Template URL: https://bootstrapmade.com/maundy-free-coming-soon-bootstrap-theme/
@@ -41,7 +39,7 @@
                 </div>
                 <div class="form-check">
                     <input class="form-check-input" type="checkbox" id="flexCheck" name="flag_place" {{checkbox_checked}}
-                           value="{{flag}}">
+                           value="{{flag_place}}">
                     <label class="form-check-label" for="flexCheck">
                         Местоположение не важно
                     </label>
@@ -58,12 +56,14 @@
             <div class="row">
                 <div class="col-md-12">
                     <div class="card">
-                        <form action="/time" method="post" class="form-submit">
+                        <form achion="#" onsubmit="return setAction(this)" class="form-submit" method="post">
                             <button id="button" type="submit" class="btn btn-outline-dark stretched-link">
                                 <h5 class="full_name">${full_name}</h5>
                                 <h4 class="post_department">${post}, ${department}</h4>
-                                <input type="hidden" name="id" id="id">
-                                <input type="hidden" name="flag" value="{{flag}}">
+                                <input type="hidden" class="id" name="id" id="id">
+                                <input type="hidden" name="flag_place" value="{{flag_place}}">
+                                <input type="hidden" name="count_teacher" id="count_teacher" value="{{count_teacher}}">
+                                <input type="hidden" class="index_teachers" name="index_teachers" id="index_teachers" value="">
                             </button>
                         </form>
                     </div>
@@ -73,6 +73,8 @@
     </div>
 
 </header>
+    <script src="static/js/info_teacher.js"></script>
+    <script src="static/js/clicked_buttons.js"></script>
 </body>
 
 </html>
