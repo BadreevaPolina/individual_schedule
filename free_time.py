@@ -150,7 +150,7 @@ def free_time_in_answer(free_time_mas, answer_mas):
         for j in free_time_mas[i]:
             for k in free_time_mas[i][j]:
                 color = color_mas[t % 9]
-                add_json_answer(k['day_month'], k['time_begin'], k['time_end'], answer_mas, color, j)
+                add_json_answer(k['day_month'], k['time_begin'], k['time_end'], answer_mas, color, "")
 
 
 def find_common_time(free, free_time_mas, answer_mas, flag):

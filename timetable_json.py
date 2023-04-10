@@ -5,13 +5,15 @@ from bs4 import BeautifulSoup
 import requests
 
 
-def add_json(day, date, time, place, data, num):
+def add_json(day, date, times, place, data, name, errs, person):
     if day:
-        data[num][day + ', ' + date] = []
-        for i, time1 in enumerate(time):
-            time1 = time1.split('\u2013')
-            one_str = {'time_begin': time1[0], 'time_end': time1[1], 'place': place[i]}
-            data[num][day + ', ' + date].append(one_str)
+        data[name][day + ', ' + date] = []
+        for i, time in enumerate(times):
+            time, err = correct_time(time, date, name)
+            if err != "":
+                errs[person].append(err)
+            one_str = {'time_begin': time[0], 'time_end': time[1], 'place': place[i]}
+            data[name][day + ', ' + date].append(one_str)
 
 
 def write_json_file(file, data):
@@ -24,7 +26,19 @@ def empty_file(file):
         file.close()
 
 
-def find_info(soup, data, i):
+def correct_time(times, date, name):
+    time = times.split('\u2013')
+    if len(time) == 2:
+        return time, ""
+    else:
+        begin = datetime.strptime(time[0], "%H:%M")
+        end = begin + timedelta(hours=1, minutes=35)
+        return [begin.strftime('%H:%M'), end.strftime('%H:%M')], "На сайте timetable нет времени конца пары " + \
+                                                                  date + " в " + begin.strftime('%H:%M') + " - " + \
+                                                                  name + ". Предположено, что пара будет идти 1:35."
+
+
+def find_info(soup, data, name, errs, person):
     panels = soup.findAll(class_='panel panel-default')
     for panel in panels:
         title = find_day(panel)
@@ -33,7 +47,7 @@ def find_info(soup, data, i):
         if title is not None and times:
             day = title[0]
             date = title[1]
-            add_json(day, date, times, places, data, str(i))
+            add_json(day, date, times, places, data, name, errs, person)
 
 
 def find_day(panel):
@@ -82,6 +96,7 @@ def few_weeks():
 
 
 def main_teacher(index, name):
+    errs = {"student": [], "teacher": []}
     empty_file('static/json/teacher.json')
     cookie = {
         "_culture": "ru",
@@ -97,12 +112,28 @@ def main_teacher(index, name):
                 url_teacher = 'https://timetable.spbu.ru/WeekEducatorEvents/' + index.strip() + '/' + str(week)
                 url_teacher_ru = requests.get(url_teacher, cookies=cookie, timeout=10).text
                 html_teacher = BeautifulSoup(url_teacher_ru, "lxml")
-                find_info(html_teacher, teacher_mas, name[i])
+                find_info(html_teacher, teacher_mas, name[i], errs, "teacher")
     write_json_file('static/json/teacher.json', teacher_mas)
+    try:
+        with open('static/json/error.json', "r", encoding="utf8") as open_file:
+            file_content = open_file.read()
+            if not file_content:
+                write_json_file('static/json/error.json', list(errs["teacher"]))
+            else:
+                data = json.loads(file_content)
+                errs["student"] = data["student"]
+                empty_file('static/json/error.json')
+                write_json_file('static/json/error.json', list([list(errs["student"]), list(errs["teacher"])]))
+    except FileNotFoundError:
+        return None
+    except json.JSONDecodeError:
+        return None
 
 
 def main_student(index, name):
+    errs = {"student": [], "teacher": []}
     empty_file('static/json/student.json')
+    empty_file('static/json/error.json')
     cookie = {
         "_culture": "ru",
         "value": "ru"
@@ -114,14 +145,15 @@ def main_student(index, name):
             student_mas[name[i]] = {}
             weeks = few_weeks()
             for week in weeks:
-                url_student = 'https://timetable.spbu.ru/MATH/StudentGroupEvents/Primary/'\
-                          + index + '/' + str(week)
+                url_student = 'https://timetable.spbu.ru/MATH/StudentGroupEvents/Primary/' \
+                              + index + '/' + str(week)
                 url_student_ru = requests.get(url_student, cookies=cookie, timeout=10).text
                 html_student = BeautifulSoup(url_student_ru, "lxml")
-                find_info(html_student, student_mas, name[i])
+                find_info(html_student, student_mas, name[i], errs, "student")
+    write_json_file('static/json/error.json', errs)
     write_json_file('static/json/student.json', student_mas)
 
 
 if __name__ == '__main__':
-    main_student("334764,334733,")
-    main_teacher("2690, 12564, ")
+    main_student("334764,334733,", "")
+    main_teacher("2690, 12564, ", "")

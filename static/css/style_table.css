@@ -17,3 +17,8 @@
   .fc .fc-timegrid-col.fc-day-today {
     background-color: #ffffff;
 }
+
+.incorrect_data {
+    font-size: 25px;
+    color : #ffffff;
+}
