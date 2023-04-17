@@ -96,7 +96,7 @@ def few_weeks():
 
 
 def main_teacher(index, name):
-    errs = {"student": [], "teacher": []}
+    errs = {"teacher": []}
     empty_file('static/json/teacher.json')
     cookie = {
         "_culture": "ru",
@@ -115,25 +115,27 @@ def main_teacher(index, name):
                 find_info(html_teacher, teacher_mas, name[i], errs, "teacher")
     write_json_file('static/json/teacher.json', teacher_mas)
     try:
-        with open('static/json/error.json', "r", encoding="utf8") as open_file:
-            file_content = open_file.read()
-            if not file_content:
-                write_json_file('static/json/error.json', list(errs["teacher"]))
-            else:
-                data = json.loads(file_content)
-                errs["student"] = data["student"]
-                empty_file('static/json/error.json')
-                write_json_file('static/json/error.json', list([list(errs["student"]), list(errs["teacher"])]))
+        write_json_errs('static/json/error.json', errs, "teacher")
     except FileNotFoundError:
         return None
     except json.JSONDecodeError:
         return None
 
 
+def write_json_errs(file, errs, person):
+    with open(file, encoding="utf8") as f:
+        data = json.load(f)
+    data[person] = errs[person]
+    if errs[person] is not None:
+        with open(file, "w", encoding="utf8") as out_file:
+            json.dump(data, out_file, ensure_ascii=False, indent=4)
+
+
 def main_student(index, name):
-    errs = {"student": [], "teacher": []}
+    errs = {"student": []}
     empty_file('static/json/student.json')
     empty_file('static/json/error.json')
+    write_json_file('static/json/error.json', {"student": [], "teacher": []})
     cookie = {
         "_culture": "ru",
         "value": "ru"
@@ -150,7 +152,7 @@ def main_student(index, name):
                 url_student_ru = requests.get(url_student, cookies=cookie, timeout=10).text
                 html_student = BeautifulSoup(url_student_ru, "lxml")
                 find_info(html_student, student_mas, name[i], errs, "student")
-    write_json_file('static/json/error.json', errs)
+    write_json_errs('static/json/error.json', errs, "student")
     write_json_file('static/json/student.json', student_mas)
 
 

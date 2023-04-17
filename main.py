@@ -29,7 +29,12 @@ def find_student(input_form):
     students = input_form.split(",")
     id_students = ""
     for student in students:
-        student = student.strip()
+        student = student.strip().upper()
+        student = student.replace("-ММ", "-мм")
+        if not "-мм" in student:
+            student += "-мм"
+        if not "." in student:
+            student = student[:2] + "." + student[2:]
         id_student = find_student_page.main_student(student)
         id_students = id_students + id_student + ","
     timetable_json.main_student(id_students, students)

@@ -10,11 +10,14 @@ fetch('static/json/error.json')
             });
         function appendData(data) {
             var mainContainer = document.getElementById("incorrect_data");
-            for (var i = 0; i < data.length; i++) {
-                for(var j = 0; j < data[i].length; j++){
-                var div = document.createElement("div");
-                div.innerHTML = data[i][j];
+            for (var i = 0; i < data["teacher"].length; i++){
+            var div = document.createElement("div");
+                div.innerHTML = data["teacher"][i];
+                mainContainer.appendChild(div);
+            }
+            for (var i = 0; i < data["student"].length; i++){
+            var div = document.createElement("div");
+                div.innerHTML = data["student"][i];
                 mainContainer.appendChild(div);
             }
         }
-       }
