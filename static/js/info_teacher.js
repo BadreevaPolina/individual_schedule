@@ -1,7 +1,7 @@
 $(function() {
   $(".card:first").hide()
   $.ajax({
-    url: "/static/json/info_teacher.json",
+    url: "/individual-schedule/static/json/info_teacher.json",
     success: function(result) {
       $.each(result, function(index, item) {
       for (i = 0; i < item.length; i++){

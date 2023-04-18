@@ -36,7 +36,7 @@ function displayGreeting(event) {
 
 function setAction(form) {
     if (c_teacher == 0){
-    form.action = "/time";
+    form.action = "/individual-schedule/time";
     event.target.querySelector(".index_teachers").value = ids
     return true;
     }

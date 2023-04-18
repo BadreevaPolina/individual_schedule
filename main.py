@@ -8,11 +8,12 @@ import find_teacher_json
 import free_time
 import timetable_json
 
-app = Flask(__name__)
+app = Flask(__name__, static_url_path="/individual-schedule/static")
+
 bootstrap = Bootstrap(app)
 
 
-@app.route("/")
+@app.route("/individual-schedule/")
 def index():
     """main page"""
     return render_template('index.html')
@@ -40,7 +41,7 @@ def find_student(input_form):
     timetable_json.main_student(id_students, students)
 
 
-@app.route('/find', methods=["GET", "POST"])
+@app.route('/individual-schedule/find', methods=["GET", "POST"])
 def find():
     """main page with information about teachers or return result timetable"""
     if request.method == 'POST':
@@ -92,7 +93,7 @@ def name_teachers(index_teachers):
     return teachers
 
 
-@app.route("/time", methods=["GET", "POST"])
+@app.route("/individual-schedule/time", methods=["GET", "POST"])
 def timetable():
     """show result page"""
     flag_place = request.form.get('flag_place')
