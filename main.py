@@ -123,7 +123,33 @@ def timetable():
     index_teachers = request.form.get('index_teachers')
     teachers = name_teachers(index_teachers)
     timetable_json.main_teacher(index_teachers, teachers)
-    free_time.main(str(flag_place))
+    try:
+        free_time.main(str(flag_place))
+    except json.decoder.JSONDecodeError:
+        timetable_json.main_teacher(index_teachers, teachers)
+        free_time.main(str(flag_place))
+    student = request.form.get('student')
+    teacher = request.form.get('teacher')
+    return render_template('table.html', student=student, teacher=teacher)
+
+
+@app.route("/individual-schedule/time-find", methods=["GET", "POST"])
+def timetable_find():
+    if request.method == 'POST':
+        student = request.form.get('student')
+        teacher = request.form.get('teacher')
+
+        student_result = jsonify(student)
+        student = find_student(student_result.json)
+        teacher_result = jsonify(teacher)
+        teacher, count_teacher = find_teacher(teacher_result.json)
+        if student is None or teacher is None:
+            return render_template('error.html')
+        json_teachers = get_info_teachers()
+        if one_zero_teacher_table("False") is not None:
+            return render_template('table.html', student=student, teacher=teacher)
+        return render_template('table.html', student=student,
+                               teacher=teacher, count_teacher=count_teacher, json_teachers=json_teachers)
     return render_template('table.html')
 
 
