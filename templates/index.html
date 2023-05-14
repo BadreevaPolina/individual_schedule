@@ -49,13 +49,15 @@
                         Получить данные
                     </button>
                 </div>
+                 <input type="hidden" class="json_teachers" name="json_teachers" id="json_teachers" value='{{json_teachers}}'>
             </form>
         </div>
-
+    </div>
+    </header>
         <div class="info_teacher" id="cards">
             <div class="row">
                 <div class="col-md-12">
-                    <div class="card">
+                    <div class="card" style="display: none;">
                         <form achion="#" onsubmit="return setAction(this)" class="form-submit" method="post">
                             <button id="button" type="submit" class="btn btn-outline-dark stretched-link">
                                 <h5 class="full_name">${full_name}</h5>

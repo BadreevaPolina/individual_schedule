@@ -21,24 +21,41 @@ def index():
 
 def find_teacher(input_form):
     """information about teachers"""
-    find_teacher_json.main_teacher(input_form)
-    return len(input_form.split(","))
+    teachers = find_teacher_json.main_teacher(input_form)
+    if teachers is None:
+        return None, None
+    teachers = teachers[:len(teachers) - 1]
+    return teachers, len(teachers.split(","))
 
 
 def find_student(input_form):
     """information about id student"""
     students = input_form.split(",")
     id_students = ""
+    students_full = ""
+    students_error = ""
     for student in students:
         student = student.strip().upper()
         student = student.replace("-ММ", "-мм")
-        if not "-мм" in student:
+        if "-мм" not in student:
             student += "-мм"
-        if not "." in student:
+        if "." not in student:
             student = student[:2] + "." + student[2:]
         id_student = find_student_page.main_student(student)
-        id_students = id_students + id_student + ","
-    timetable_json.main_student(id_students, students)
+        if id_student is not None and id_student != "":
+            id_students = id_students + id_student + ","
+            students_full = students_full + student + ","
+        elif id_student is None:
+            return None
+    students_full = students_full[:len(students_full) - 1]
+    timetable_json.main_student(id_students, students_full.split(","))
+    return students_full
+
+
+def get_info_teachers():
+    with open("static/json/info_teacher.json", encoding="utf8") as file:
+        data = json.load(file)
+    return str(data).replace("\'", "\"")
 
 
 @app.route('/individual-schedule/find', methods=["GET", "POST"])
@@ -49,15 +66,18 @@ def find():
         teacher = request.form.get('teacher')
         flag_place = 'flag_place' in request.form
         student_result = jsonify(student)
-        find_student(student_result.json)
+        student = find_student(student_result.json)
         teacher_result = jsonify(teacher)
-        count_teacher = find_teacher(teacher_result.json)
+        teacher, count_teacher = find_teacher(teacher_result.json)
+        if student is None or teacher is None:
+            return render_template('error.html')
+        json_teachers = get_info_teachers()
         if one_zero_teacher_table(str(flag_place)) is not None:
-            return render_template('table.html')
+            return render_template('table.html', student=student, teacher=teacher)
         return render_template('index.html', student=student,
                                teacher=teacher, flag_place=flag_place,
                                checkbox_checked="checked" if flag_place else "",
-                               count_teacher=count_teacher)
+                               count_teacher=count_teacher, json_teachers=json_teachers)
     return render_template('index.html')
 
 
@@ -84,13 +104,16 @@ def one_zero_teacher_table(flag):
 def name_teachers(index_teachers):
     with open("static/json/info_teacher.json", encoding="utf8") as file:
         data_t = json.load(file)
-    index_teachers = index_teachers.split(", ")
-    teachers = []
-    for j, index_teacher in enumerate(index_teachers):
-        for i in data_t['teacher']:
-            if i['index'] == index_teacher:
-                teachers = teachers + [i['full_name']]
-    return teachers
+    try:
+        index_teachers = index_teachers.split(", ")
+        teachers = []
+        for j, index_teacher in enumerate(index_teachers):
+            for i in data_t['teacher']:
+                if i['index'] == index_teacher:
+                    teachers = teachers + [i['full_name']]
+        return teachers
+    except AttributeError:
+        return ""
 
 
 @app.route("/individual-schedule/time", methods=["GET", "POST"])

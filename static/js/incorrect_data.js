@@ -1,4 +1,4 @@
-fetch('static/json/error.json')
+fetch('static/json/error_timetable.json')
             .then(function (response) {
                 return response.json();
             })

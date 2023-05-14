@@ -69,18 +69,24 @@ def main_teacher(teacher_target):
     }
 
     choice = {"teacher": []}
+    teacher_input = ""
     teachers_target = teacher_target.split(",")
-    for teacher in teachers_target:
-        user_input = teacher.lower().strip()
-        name_list = user_input.split(sep=' ')
-        surname = name_list[0]
-        url = 'https://timetable.spbu.ru/EducatorEvents/Index?q=' + surname
-        wbdata = requests.get(url, cookies=cookie, timeout=10).text
-        soup = BeautifulSoup(wbdata, 'lxml')
-
-        teachers = find_teachers(soup, user_input)
-        find_info_teachers(teachers, soup, choice)
-    write_json_file('static/json/info_teacher.json', choice)
+    try:
+        for teacher in teachers_target:
+            user_input = teacher.lower().strip()
+            name_list = user_input.split(sep=' ')
+            surname = name_list[0]
+            url = 'https://timetable.spbu.ru/EducatorEvents/Index?q=' + surname
+            wbdata = requests.get(url, cookies=cookie, timeout=10).text
+            soup = BeautifulSoup(wbdata, 'lxml')
+            teachers = find_teachers(soup, user_input)
+            if teachers:
+                teacher_input = teacher_input + teacher + ","
+            find_info_teachers(teachers, soup, choice)
+        write_json_file('static/json/info_teacher.json', choice)
+        return teacher_input
+    except requests.exceptions.Timeout and requests.exceptions.ConnectionError:
+        return None
 
 
 if __name__ == '__main__':

@@ -60,10 +60,13 @@ def main_student(group):
         "value": "ru"
     }
     url_main_page = 'https://timetable.spbu.ru/MATH'
-    url_main_page_ru = requests.get(url_main_page, cookies=cookie, timeout=10).text
-    html_main_page = BeautifulSoup(url_main_page_ru, "lxml")
-    number = find_year(html_main_page, group)
-    return number
+    try:
+        url_main_page_ru = requests.get(url_main_page, cookies=cookie, timeout=10).text
+        html_main_page = BeautifulSoup(url_main_page_ru, "lxml")
+        number = find_year(html_main_page, group)
+        return number
+    except requests.exceptions.Timeout and requests.exceptions.ConnectionError:
+        return None
 
 
 if __name__ == '__main__':

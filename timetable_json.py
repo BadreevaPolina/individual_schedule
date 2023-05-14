@@ -103,19 +103,22 @@ def main_teacher(index, name):
         "value": "ru"
     }
     teacher_mas = {}
-    teachers_index = index.split(',')
-    for i, index in enumerate(teachers_index):
-        if index != '' and index != ' ':
-            teacher_mas[name[i]] = {}
-            weeks = few_weeks()
-            for week in weeks:
-                url_teacher = 'https://timetable.spbu.ru/WeekEducatorEvents/' + index.strip() + '/' + str(week)
-                url_teacher_ru = requests.get(url_teacher, cookies=cookie, timeout=10).text
-                html_teacher = BeautifulSoup(url_teacher_ru, "lxml")
-                find_info(html_teacher, teacher_mas, name[i], errs, "teacher")
+    try:
+        teachers_index = index.split(',')
+        for i, index in enumerate(teachers_index):
+            if index != '' and index != ' ':
+                teacher_mas[name[i]] = {}
+                weeks = few_weeks()
+                for week in weeks:
+                    url_teacher = 'https://timetable.spbu.ru/WeekEducatorEvents/' + index.strip() + '/' + str(week)
+                    url_teacher_ru = requests.get(url_teacher, cookies=cookie, timeout=10).text
+                    html_teacher = BeautifulSoup(url_teacher_ru, "lxml")
+                    find_info(html_teacher, teacher_mas, name[i], errs, "teacher")
+    except AttributeError:
+        return None
     write_json_file('static/json/teacher.json', teacher_mas)
     try:
-        write_json_errs('static/json/error.json', errs, "teacher")
+        write_json_errs('static/json/error_timetable.json', errs, "teacher")
     except FileNotFoundError:
         return None
     except json.JSONDecodeError:
@@ -134,8 +137,8 @@ def write_json_errs(file, errs, person):
 def main_student(index, name):
     errs = {"student": []}
     empty_file('static/json/student.json')
-    empty_file('static/json/error.json')
-    write_json_file('static/json/error.json', {"student": [], "teacher": []})
+    empty_file('static/json/error_timetable.json')
+    write_json_file('static/json/error_timetable.json', {"student": [], "teacher": []})
     cookie = {
         "_culture": "ru",
         "value": "ru"
@@ -152,7 +155,7 @@ def main_student(index, name):
                 url_student_ru = requests.get(url_student, cookies=cookie, timeout=10).text
                 html_student = BeautifulSoup(url_student_ru, "lxml")
                 find_info(html_student, student_mas, name[i], errs, "student")
-    write_json_errs('static/json/error.json', errs, "student")
+    write_json_errs('static/json/error_timetable.json', errs, "student")
     write_json_file('static/json/student.json', student_mas)
 
 
