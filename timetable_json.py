@@ -33,9 +33,9 @@ def correct_time(times, date, name):
     else:
         begin = datetime.strptime(time[0], "%H:%M")
         end = begin + timedelta(hours=1, minutes=35)
-        return [begin.strftime('%H:%M'), end.strftime('%H:%M')], "На сайте timetable нет времени конца пары " + \
-                                                                  date + " в " + begin.strftime('%H:%M') + " - " + \
-                                                                  name + ". Предположено, что пара будет идти 1:35."
+        return [begin.strftime('%H:%M'), end.strftime('%H:%M')], "Не указано время конца пары " + \
+               date + " в " + begin.strftime('%H:%M') + " - " + \
+               name + ". Предполагается, что занятие будет длиться 1:35."
 
 
 def find_info(soup, data, name, errs, person):
@@ -114,14 +114,12 @@ def main_teacher(index, name):
                     url_teacher_ru = requests.get(url_teacher, cookies=cookie, timeout=10).text
                     html_teacher = BeautifulSoup(url_teacher_ru, "lxml")
                     find_info(html_teacher, teacher_mas, name[i], errs, "teacher")
-    except AttributeError:
+    except AttributeError or IndexError or ConnectionError:
         return None
     write_json_file('static/json/teacher.json', teacher_mas)
     try:
-        write_json_errs('static/json/error_timetable.json', errs, "teacher")
-    except FileNotFoundError:
-        return None
-    except json.JSONDecodeError:
+        write_json_errs('static/json/incorrect_data.json', errs, "teacher")
+    except FileNotFoundError or json.JSONDecodeError:
         return None
 
 
@@ -137,8 +135,8 @@ def write_json_errs(file, errs, person):
 def main_student(index, name):
     errs = {"student": []}
     empty_file('static/json/student.json')
-    empty_file('static/json/error_timetable.json')
-    write_json_file('static/json/error_timetable.json', {"student": [], "teacher": []})
+    empty_file('static/json/incorrect_data.json')
+    write_json_file('static/json/incorrect_data.json', {"student": [], "teacher": []})
     cookie = {
         "_culture": "ru",
         "value": "ru"
@@ -155,7 +153,7 @@ def main_student(index, name):
                 url_student_ru = requests.get(url_student, cookies=cookie, timeout=10).text
                 html_student = BeautifulSoup(url_student_ru, "lxml")
                 find_info(html_student, student_mas, name[i], errs, "student")
-    write_json_errs('static/json/error_timetable.json', errs, "student")
+    write_json_errs('static/json/incorrect_data.json', errs, "student")
     write_json_file('static/json/student.json', student_mas)
 
 

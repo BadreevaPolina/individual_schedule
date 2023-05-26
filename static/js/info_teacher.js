@@ -1,12 +1,29 @@
-var json = document.getElementById("json_teachers").value;
-var obj = JSON.parse(json)
-value = obj.teacher[0];
 const full_name = [];
 const post = [];
 const department = [];
 const index = [];
 var i = 0;
 
+$(document).ready(function() {
+  $('form').submit(function() {
+    var submitButton = $(this).find('button[type="submit"]');
+    submitButton.prop('disabled', true);
+    submitButton.find('.spinner-border').removeClass('d-none');
+  });
+});
+
+var hiddenElementError = document.querySelector('.error');
+var inputFieldError = document.querySelector('#words_error');
+if (inputFieldError.value === ' ' || inputFieldError.value === '' || inputFieldError.value === 'None') {
+    hiddenElementError.style.display = 'none';
+  } else {
+    hiddenElementError.style.display = 'block';
+  }
+
+var json = document.getElementById("json_teachers").value;
+if (json !== "None"){
+var obj = JSON.parse(json);
+value = obj.teacher[0];
 JSON.parse(json, function(key, value) {
   if (key == 'full_name') full_name[i] = value;
   if (key == 'post') post[i] = value;
@@ -16,6 +33,7 @@ JSON.parse(json, function(key, value) {
   i = i + 1;
   }
 });
+}
 
 $(function() {
   $(".card:first").hide()

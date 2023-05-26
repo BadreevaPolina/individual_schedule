@@ -70,6 +70,7 @@ def main_teacher(teacher_target):
 
     choice = {"teacher": []}
     teacher_input = ""
+    teachers_error = ""
     teachers_target = teacher_target.split(",")
     try:
         for teacher in teachers_target:
@@ -82,11 +83,13 @@ def main_teacher(teacher_target):
             teachers = find_teachers(soup, user_input)
             if teachers:
                 teacher_input = teacher_input + teacher + ","
+            else:
+                teachers_error = teachers_error + teacher + ","
             find_info_teachers(teachers, soup, choice)
         write_json_file('static/json/info_teacher.json', choice)
-        return teacher_input
+        return teacher_input, teachers_error
     except requests.exceptions.Timeout and requests.exceptions.ConnectionError:
-        return None
+        return None, None
 
 
 if __name__ == '__main__':

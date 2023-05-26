@@ -137,13 +137,17 @@ def check_common_time_persons(free_time_mas, flag):
 
 
 def free_time_in_answer(free_time_mas, answer_mas):
-    color_mas = ["#71AB7E", "#A4A0CE", "#E3DD95", "#F1C7C3", "#F1B7B3", "#B8A8CC", "#99ccff", "#ffcc99", "#ccff66"]
+    color_mas = ["#71AB7E", "#ffcc99", "#E3DD95", "#6D6D6e", "#F1B7B3", "#B8A8CC", "#99ccff", "#73d978", "#ccff66"]
     t = 0
+    count = len(free_time_mas['student']) + len(free_time_mas['teacher'])
     for i in free_time_mas:
         t += 1
         for j in free_time_mas[i]:
             for k in free_time_mas[i][j]:
-                color = color_mas[t % 9]
+                if count == 1:
+                    color = "#4e8bb1"
+                else:
+                    color = color_mas[t % 9]
                 add_json_answer(k['day_month'], k['time_begin'], k['time_end'], answer_mas, color, "")
 
 
@@ -297,7 +301,7 @@ def break_time(result_time):
 
 
 def add_in_answer(file, answer_mas, t):
-    color_mas = ["#71AB7E", "#A4A0CE", "#E3DD95", "#F1C7C3", "#F1B7B3", "#B8A8CC", "#99ccff", "#ffcc99", "#ccff66"]
+    color_mas = ["#71AB7E", "#ffcc99", "#E3DD95", "#6D6D6e", "#F1B7B3", "#B8A8CC", "#99ccff", "#73d978", "#ccff66"]
     with open(file, encoding="utf8") as open_file:
         read = json.load(open_file)
     for num in read:
