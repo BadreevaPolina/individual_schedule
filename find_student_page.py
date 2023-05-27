@@ -1,8 +1,10 @@
+"""student group schedule"""
 from bs4 import BeautifulSoup
 import requests
 
 
 def id_student(html_year_page, group_target):
+    """index group in page with several groups"""
     groups = html_year_page.find_all(class_='tile', onclick=True)
     for group in groups:
         group_name = group.text.strip().split('\r\n')
@@ -14,6 +16,7 @@ def id_student(html_year_page, group_target):
 
 
 def current_year(html_year_page, group_target):
+    """parse group_target the schedule"""
     groups = html_year_page.find_all(id='studentGroupsForCurrentYear')
     for group in groups:
         index = id_student(group, group_target)
@@ -23,6 +26,7 @@ def current_year(html_year_page, group_target):
 
 
 def parse_group(index_year, group):
+    """parse group"""
     cookie = {
         "_culture": "ru",
         "value": "ru"
@@ -34,6 +38,7 @@ def parse_group(index_year, group):
 
 
 def find_group(tag_a, group):
+    """determine group index in page with several groups"""
     title = tag_a['title'].split(", ")
     for group_in_title in title:
         if group == group_in_title:
@@ -43,6 +48,7 @@ def find_group(tag_a, group):
 
 
 def find_year(html_main_page, group):
+    """year of admission to university"""
     year_group = "20" + group.split(".Б")[0]
     for tag_a in html_main_page.find_all('a', href=True, title=True):
         title_year = tag_a.text.strip()
@@ -55,6 +61,7 @@ def find_year(html_main_page, group):
 
 
 def main_student(group):
+    """find student group schedule"""
     cookie = {
         "_culture": "ru",
         "value": "ru"
@@ -65,9 +72,9 @@ def main_student(group):
         html_main_page = BeautifulSoup(url_main_page_ru, "lxml")
         number = find_year(html_main_page, group)
         return number
-    except requests.exceptions.Timeout and requests.exceptions.ConnectionError:
+    except (requests.exceptions.Timeout, requests.exceptions.ConnectionError):
         return None
 
 
 if __name__ == '__main__':
-    main_student("21.Б15-мм")
+    main_student("21.Б15-мм")  # example

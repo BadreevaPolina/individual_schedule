@@ -1,3 +1,4 @@
+"""jsons with timetable information"""
 from datetime import datetime
 from datetime import timedelta
 import json
@@ -5,40 +6,44 @@ from bs4 import BeautifulSoup
 import requests
 
 
-def add_json(day, date, times, place, data, name, errs, person):
+def add_json(day, date, times, place, data, name, incorrect_time_person):
+    """string add in response array"""
     if day:
         data[name][day + ', ' + date] = []
         for i, time in enumerate(times):
-            time, err = correct_time(time, date, name)
-            if err != "":
-                errs[person].append(err)
+            time, incorrect_time = correct_time(time, date, name)
+            if incorrect_time != "":
+                incorrect_time_person.append(incorrect_time)
             one_str = {'time_begin': time[0], 'time_end': time[1], 'place': place[i]}
             data[name][day + ', ' + date].append(one_str)
 
 
 def write_json_file(file, data):
+    """add response array in file"""
     with open(file, "a", encoding="utf8") as out_file:
         json.dump(data, out_file, ensure_ascii=False, indent=4)
 
 
 def empty_file(file):
-    with open(file, "w", encoding="utf8") as file:
-        file.close()
+    """add response array in file"""
+    with open(file, "w", encoding="utf8") as out_file:
+        out_file.close()
 
 
 def correct_time(times, date, name):
+    """write correct time"""
     time = times.split('\u2013')
     if len(time) == 2:
         return time, ""
-    else:
-        begin = datetime.strptime(time[0], "%H:%M")
-        end = begin + timedelta(hours=1, minutes=35)
-        return [begin.strftime('%H:%M'), end.strftime('%H:%M')], "Не указано время конца пары " + \
-               date + " в " + begin.strftime('%H:%M') + " - " + \
-               name + ". Предполагается, что занятие будет длиться 1:35."
+    begin = datetime.strptime(time[0], "%H:%M")
+    end = begin + timedelta(hours=1, minutes=35)
+    return [begin.strftime('%H:%M'), end.strftime('%H:%M')], "Не указано время конца пары " + \
+            date + " в " + begin.strftime('%H:%M') + " - " + \
+            name + ". Предполагается, что занятие будет длиться 1:35."
 
 
-def find_info(soup, data, name, errs, person):
+def find_info(soup, data, name, incorrect_time_person):
+    """collect all information"""
     panels = soup.findAll(class_='panel panel-default')
     for panel in panels:
         title = find_day(panel)
@@ -47,10 +52,11 @@ def find_info(soup, data, name, errs, person):
         if title is not None and times:
             day = title[0]
             date = title[1]
-            add_json(day, date, times, places, data, name, errs, person)
+            add_json(day, date, times, places, data, name, incorrect_time_person)
 
 
 def find_day(panel):
+    """information about day"""
     days = panel.find_all('h4', class_='panel-title')
     for day_str in days:
         only_day = day_str.get_text().split(',')
@@ -61,6 +67,7 @@ def find_day(panel):
 
 
 def find_time(panel):
+    """information about time"""
     times = panel.find_all('span', title='Время')
     time_array = []
     for time in times:
@@ -70,6 +77,7 @@ def find_time(panel):
 
 
 def find_place(panel):
+    """information about place"""
     places = panel.findAll(True, {"class": ["col-sm-3 studyevent-locations",
                                             "col-sm-3 studyevent-multiple-locations"]})
     place_array = []
@@ -81,12 +89,14 @@ def find_place(panel):
 
 
 def today_week():
+    """define the start date of this week"""
     today = datetime.now().date()
     date = today - timedelta(datetime.now().weekday())
     return date
 
 
 def few_weeks():
+    """write the beginning of several weeks"""
     weeks = []
     this_week = today_week()
     for i in range(0, 4):
@@ -95,68 +105,72 @@ def few_weeks():
     return weeks
 
 
-def main_teacher(index, name):
-    errs = {"teacher": []}
-    empty_file('static/json/teacher.json')
+def info_schedule(person_mas, name, url, incorrect_time_person):
+    """info about schedule for several weeks"""
     cookie = {
         "_culture": "ru",
         "value": "ru"
     }
-    teacher_mas = {}
-    try:
-        teachers_index = index.split(',')
-        for i, index in enumerate(teachers_index):
-            if index != '' and index != ' ':
-                teacher_mas[name[i]] = {}
-                weeks = few_weeks()
-                for week in weeks:
-                    url_teacher = 'https://timetable.spbu.ru/WeekEducatorEvents/' + index.strip() + '/' + str(week)
-                    url_teacher_ru = requests.get(url_teacher, cookies=cookie, timeout=10).text
-                    html_teacher = BeautifulSoup(url_teacher_ru, "lxml")
-                    find_info(html_teacher, teacher_mas, name[i], errs, "teacher")
-    except AttributeError or IndexError or ConnectionError:
-        return None
-    write_json_file('static/json/teacher.json', teacher_mas)
-    try:
-        write_json_errs('static/json/incorrect_data.json', errs, "teacher")
-    except FileNotFoundError or json.JSONDecodeError:
-        return None
+    weeks = few_weeks()
+    for week in weeks:
+        url_person = url + str(week)
+        url_person_ru = requests.get(url_person, cookies=cookie, timeout=10).text
+        html_person = BeautifulSoup(url_person_ru, "lxml")
+        find_info(html_person, person_mas, name, incorrect_time_person)
+    return person_mas, incorrect_time_person
 
 
-def write_json_errs(file, errs, person):
-    with open(file, encoding="utf8") as f:
-        data = json.load(f)
-    data[person] = errs[person]
-    if errs[person] is not None:
+def write_incorrect_time(file, incorrect_time, person):
+    """incorrect time in json file"""
+    with open(file, encoding="utf8") as file_data:
+        data = json.load(file_data)
+    data[person] = incorrect_time[person]
+    if incorrect_time[person] is not None:
         with open(file, "w", encoding="utf8") as out_file:
             json.dump(data, out_file, ensure_ascii=False, indent=4)
 
 
-def main_student(index, name):
-    errs = {"student": []}
+def main_teacher(input_index, name):
+    """json with teachers timetable information"""
+    incorrect_time = {"teacher": []}
+    empty_file('static/json/teacher.json')
+    teacher_mas = {}
+    try:
+        teachers_index = input_index.split(',')
+        for i, index in enumerate(teachers_index):
+            if index not in ('', ' '):
+                url_teacher = 'https://timetable.spbu.ru/WeekEducatorEvents/' \
+                              + index.strip() + '/'
+                teacher_mas[name[i]] = {}
+                teacher_mas, incorrect_time["teacher"] = info_schedule(teacher_mas,
+                                                                       name[i], url_teacher,
+                                                                       incorrect_time["teacher"])
+        write_json_file('static/json/teacher.json', teacher_mas)
+        write_incorrect_time('static/json/incorrect_data.json', incorrect_time, "teacher")
+    except (AttributeError, IndexError, ConnectionError, FileNotFoundError, json.JSONDecodeError):
+        pass
+
+
+def main_student(input_index, name):
+    """json with students timetable information"""
+    incorrect_time = {"student": []}
     empty_file('static/json/student.json')
     empty_file('static/json/incorrect_data.json')
     write_json_file('static/json/incorrect_data.json', {"student": [], "teacher": []})
-    cookie = {
-        "_culture": "ru",
-        "value": "ru"
-    }
     student_mas = {}
-    student_index = index.split(',')
+    student_index = input_index.split(',')
     for i, index in enumerate(student_index):
-        if index != '' and index != ' ':
+        if index not in ('', ' '):
+            url_student = 'https://timetable.spbu.ru/MATH/StudentGroupEvents/Primary/' \
+                          + index + '/'
             student_mas[name[i]] = {}
-            weeks = few_weeks()
-            for week in weeks:
-                url_student = 'https://timetable.spbu.ru/MATH/StudentGroupEvents/Primary/' \
-                              + index + '/' + str(week)
-                url_student_ru = requests.get(url_student, cookies=cookie, timeout=10).text
-                html_student = BeautifulSoup(url_student_ru, "lxml")
-                find_info(html_student, student_mas, name[i], errs, "student")
-    write_json_errs('static/json/incorrect_data.json', errs, "student")
+            student_mas, incorrect_time["student"] = info_schedule(student_mas,
+                                                                   name[i], url_student,
+                                                                   incorrect_time["student"])
+    write_incorrect_time('static/json/incorrect_data.json', incorrect_time, "student")
     write_json_file('static/json/student.json', student_mas)
 
 
 if __name__ == '__main__':
-    main_student("334764,334733,", "")
-    main_teacher("2690, 12564, ", "")
+    main_student("334764,334733,", ['1', '2'])  # example
+    main_teacher("2690, 2167685, ", ['1', '2'])  # example

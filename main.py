@@ -1,3 +1,4 @@
+"""main page"""
 import json
 
 from flask import Flask, render_template, request, jsonify
@@ -20,6 +21,7 @@ def index():
 
 
 def delete_comma(error, basic):
+    """delete comma when returning input"""
     if error != "":
         error = error[:len(error) - 1]
     else:
@@ -64,12 +66,14 @@ def find_student(input_form):
 
 
 def get_info_teachers():
+    """get information from a json"""
     with open("static/json/info_teacher.json", encoding="utf8") as file:
         data = json.load(file)
     return str(data).replace("\'", "\"")
 
 
 def get_info_incorrect_data():
+    """get information from a json"""
     result = ""
     with open("static/json/incorrect_data.json", encoding="utf8") as file:
         data = json.load(file)
@@ -78,11 +82,12 @@ def get_info_incorrect_data():
             for j in data[i]:
                 result = result + str(j) + '\n'
         return result[:len(result)-1]
-    except AttributeError or IndexError:
+    except (AttributeError, IndexError):
         return "None"
 
 
 def write_words_error(student_error, teacher_error):
+    """combine words with mistake"""
     if student_error != "" and teacher_error != "":
         words_error = student_error + ", " + teacher_error
     else:
@@ -107,14 +112,17 @@ def find():
             return render_template('error.html')
         json_teachers = get_info_teachers()
         words_error = write_words_error(student_error, teacher_error)
-        if one_zero_teacher_table(str(flag_place), count_teacher) is not None and words_error == "None":
+        if one_zero_teacher_table(str(flag_place), count_teacher) is not None \
+                and words_error == "None":
             incorrect_data = get_info_incorrect_data()
             return render_template('table.html', student=student, teacher=teacher,
-                                   incorrect_data=incorrect_data, json_teachers="None", words_error=words_error)
+                                   incorrect_data=incorrect_data, json_teachers="None",
+                                   words_error=words_error)
         return render_template('index.html', student=student + student_error,
                                teacher=teacher + teacher_error, flag_place=flag_place,
                                checkbox_checked="checked" if flag_place else "",
-                               count_teacher=count_teacher, json_teachers=json_teachers, words_error=words_error)
+                               count_teacher=count_teacher, json_teachers=json_teachers,
+                               words_error=words_error)
     return render_template('index.html', json_teachers="None", words_error="None")
 
 
@@ -142,12 +150,13 @@ def one_zero_teacher_table(flag, count_teacher):
 
 
 def name_teachers(index_teachers):
+    """find selected teachers"""
     with open("static/json/info_teacher.json", encoding="utf8") as file:
         data_t = json.load(file)
     try:
         index_teachers = index_teachers.split(", ")
         teachers = []
-        for j, index_teacher in enumerate(index_teachers):
+        for _, index_teacher in enumerate(index_teachers):
             for i in data_t['teacher']:
                 if i['index'] == index_teacher:
                     teachers = teachers + [i['full_name']]
@@ -177,6 +186,7 @@ def timetable():
 
 @app.route("/individual-schedule/time-find", methods=["GET", "POST"])
 def timetable_find():
+    """show find teachers or result page"""
     if request.method == 'POST':
         student = request.form.get('student')
         teacher = request.form.get('teacher')
@@ -194,10 +204,12 @@ def timetable_find():
         if one_zero_teacher_table("False", count_teacher) is not None and words_error == "None":
             incorrect_data = get_info_incorrect_data()
             return render_template('table.html', student=student, teacher=teacher,
-                                   words_error=words_error, incorrect_data=incorrect_data, json_teachers="None")
-        return render_template('table.html', student=student + student_error, teacher=teacher + teacher_error,
+                                   words_error=words_error, incorrect_data=incorrect_data,
+                                   json_teachers="None")
+        return render_template('table.html', student=student + student_error,
+                               teacher=teacher + teacher_error,
                                count_teacher=count_teacher, json_teachers=json_teachers,
-                               words_error=words_error)
+                               words_error=words_error, incorrect_data="None")
     return render_template('table.html')
 
 

@@ -1,3 +1,4 @@
+"""information about suitable teachers"""
 import re
 import json
 
@@ -6,16 +7,19 @@ import requests
 
 
 def add_json(full_name, post, department, index, choice):
+    """string add in response array"""
     one_str = {'full_name': full_name, 'post': post, 'department': department, 'index': index}
     choice["teacher"].append(one_str)
 
 
 def write_json_file(file, data):
+    """add response array in file"""
     with open(file, "w", encoding='utf-8') as out_file:
         json.dump(data, out_file, ensure_ascii=False, indent=4)
 
 
 def find_teachers(soup, user_input):
+    """collect all suitable teachers"""
     teachers = []
     teacher_name = soup.find_all("div", class_="col-sm-3")
     for elem, name in enumerate(teacher_name):
@@ -26,23 +30,27 @@ def find_teachers(soup, user_input):
             user_target = user_input.split(" ")
             users = name.lower().split(" ")
             if len(user_target) == len(users):
-                if user_target[0] == users[0] and user_target[1] == users[1][: len(user_target[1])] \
+                if user_target[0] == users[0] \
+                        and user_target[1] == users[1][: len(user_target[1])] \
                         and user_target[2] == users[2][: len(user_target[2])]:
                     teachers.append((name, elem))
     return teachers
 
 
 def find_teacher_post(soup, elem):
+    """information about post"""
     post = soup.find_all("div", class_="col-sm-2")
     return post[elem].get_text().strip().replace("\r\n", ", ")
 
 
 def find_teacher_department(soup, elem):
+    """information about department"""
     department = soup.find_all("div", class_="col-sm-7")
-    return department[elem].get_text().strip().replace("\r\n", ", ")
+    return department[elem].get_text().strip().replace("\r\n", ", ").replace("\"", "")
 
 
 def find_teacher_index(soup, elem):
+    """information about index"""
     count = 0
     for tag_a in soup.find_all(onclick=True):
         line = str(tag_a['onclick'])
@@ -54,6 +62,7 @@ def find_teacher_index(soup, elem):
 
 
 def find_info_teachers(teachers, soup, choice):
+    """collect all information"""
     for teacher in teachers:
         teacher_index_array = teacher[1]
         post = find_teacher_post(soup, teacher_index_array)
@@ -63,6 +72,7 @@ def find_info_teachers(teachers, soup, choice):
 
 
 def main_teacher(teacher_target):
+    """get information about suitable teachers"""
     cookie = {
         "_culture": "ru",
         "value": "ru"
@@ -88,9 +98,9 @@ def main_teacher(teacher_target):
             find_info_teachers(teachers, soup, choice)
         write_json_file('static/json/info_teacher.json', choice)
         return teacher_input, teachers_error
-    except requests.exceptions.Timeout and requests.exceptions.ConnectionError:
+    except (requests.exceptions.Timeout, requests.exceptions.ConnectionError):
         return None, None
 
 
 if __name__ == '__main__':
-    main_teacher("Смирнов Михаил Николаевич, Кириленко Я А")
+    main_teacher("Смирнов Михаил Николаевич, Кириленко Я А") # example
