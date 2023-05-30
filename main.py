@@ -72,6 +72,15 @@ def get_info_teachers():
     return str(data).replace("\'", "\"")
 
 
+def get_info_answer():
+    """get information from a json"""
+    with open("static/json/answer.json", encoding="utf8") as file:
+        data = json.load(file)
+    if str(data) == "[]":
+        return "None"
+    return "ok"
+
+
 def get_info_incorrect_data():
     """get information from a json"""
     result = ""
@@ -117,12 +126,12 @@ def find():
             incorrect_data = get_info_incorrect_data()
             return render_template('table.html', student=student, teacher=teacher,
                                    incorrect_data=incorrect_data, json_teachers="None",
-                                   words_error=words_error)
+                                   words_error=words_error, answer=get_info_answer())
         return render_template('index.html', student=student + student_error,
                                teacher=teacher + teacher_error, flag_place=flag_place,
                                checkbox_checked="checked" if flag_place else "",
                                count_teacher=count_teacher, json_teachers=json_teachers,
-                               words_error=words_error)
+                               words_error=words_error, answer=get_info_answer())
     return render_template('index.html', json_teachers="None", words_error="None")
 
 
@@ -181,7 +190,7 @@ def timetable():
     words_error = request.form.get('words_error')
     incorrect_data = get_info_incorrect_data()
     return render_template('table.html', student=student, teacher=teacher, json_teachers="None",
-                           words_error=words_error, incorrect_data=incorrect_data)
+                           words_error=words_error, incorrect_data=incorrect_data, answer=get_info_answer())
 
 
 @app.route("/individual-schedule/time-find", methods=["GET", "POST"])
@@ -205,11 +214,11 @@ def timetable_find():
             incorrect_data = get_info_incorrect_data()
             return render_template('table.html', student=student, teacher=teacher,
                                    words_error=words_error, incorrect_data=incorrect_data,
-                                   json_teachers="None")
+                                   json_teachers="None", answer=get_info_answer())
         return render_template('table.html', student=student + student_error,
                                teacher=teacher + teacher_error,
                                count_teacher=count_teacher, json_teachers=json_teachers,
-                               words_error=words_error, incorrect_data="None")
+                               words_error=words_error, incorrect_data="None", answer=get_info_answer())
     return render_template('table.html')
 
 

@@ -46,6 +46,19 @@ def add_json_answer(day_month, time_begin, time_end, answer_mas, color, title):
     answer_mas.append(one_str)
 
 
+def add_json_unchanged(day_month, subject, time_begin, time_end, answer_mas, color, title):
+    """string add in response array"""
+    date = date_week(day_month)
+    date_title = datetime.strptime(date, "%Y-%m-%d %H:%M:%S")
+    if title == "":
+        title = date_title.strftime("%d.%m.%Y")
+    time_begin_str = format_time(time_begin, date_title)
+    time_end_str = format_time(time_end, date_title)
+    one_str = {'title': title + "," + subject, 'start': time_begin_str,
+               'end': time_end_str, 'color': color}
+    answer_mas.append(one_str)
+
+
 def write_json_file(file, tables):
     """add response array in file"""
     with open(file, "w", encoding="utf8") as out_file:
@@ -102,10 +115,10 @@ def check_place(end, begin, day, person, num):  # end first lesson, begin second
             place[0] = i['place']
         if begin == i['time_begin']:
             place[1] = i['place']
-    if begin == "20:40":
-        place[1] = "Университетский проспект"
-    if end == "09:30":
-        place[0] = "Университетский проспект"
+        if begin == "20:40":
+            place[1] = i['place']  # Университетский проспект
+        if end == "09:30":
+            place[0] = i['place']
     return place
 
 
@@ -254,8 +267,10 @@ def compare_place(result_time, i, j):  # teacher - i, student - j
                 return i['place_begin'], res
             if datetime.strptime(j['time_end'], "%H:%M") - \
                     datetime.strptime(j['time_begin'], "%H:%M") >= timedelta(hours=5, minutes=45):
-                begin = begin + timedelta(hours=2, minutes=0)
-                end = end - timedelta(hours=2, minutes=0)
+                if result_time[0] != "9:30":
+                    begin = begin + timedelta(hours=2, minutes=0)
+                if result_time[1] != "20:40":
+                    end = end - timedelta(hours=2, minutes=0)
                 result_time = begin.strftime('%H:%M') + "-" + end.strftime('%H:%M')
                 return i['place_begin'], result_time
             return "", ""
@@ -343,8 +358,8 @@ def add_in_answer(file, answer_mas, color_number):
         for i in read[num]:
             for j in read[num][i]:
                 color = color_mas[color_number % 9]
-                add_json_answer(i.split(', ')[1], j['time_begin'], j['time_end'],
-                                answer_mas, color, num)
+                add_json_unchanged(i.split(', ')[1], j['subject'], j['time_begin'], j['time_end'],
+                                   answer_mas, color, num)
 
 
 def check_answer_empty(answer_mas, file_teacher, file_student):
@@ -364,22 +379,33 @@ def delete_repeat(answer_mas):
             i += 1
 
 
+def timetable_unchanged(timetable_unchanged_mas, file_teacher, file_student):
+    add_in_answer(file_student, timetable_unchanged_mas, 0)
+    add_in_answer(file_teacher, timetable_unchanged_mas, 5)
+
+
 def main(flag):
     """define result"""
     file_teacher = 'static/json/teacher.json'
     file_student = 'static/json/student.json'
     free = 'static/json/free_time.json'
     answer = 'static/json/answer.json'
+    unchanged_time = 'static/json/timetable_unchanged.json'
 
     free_time_mas = {"teacher": {}, "student": {}}
-    free_time(file_teacher, "teacher", free_time_mas, flag)  # &&&&&&&&&&&&&&&&&&&
+    free_time(file_teacher, "teacher", free_time_mas, flag)
     free_time(file_student, "student", free_time_mas, flag)
     write_json_file(free, free_time_mas)
     answer_mas = []
     find_common_time(free, free_time_mas, answer_mas, flag)
-    check_answer_empty(answer_mas, file_teacher, file_student)
+    # check_answer_empty(answer_mas, file_teacher, file_student)
     delete_repeat(answer_mas)
     write_json_file(answer, answer_mas)
+
+    timetable_unchanged_mas = []
+    timetable_unchanged(timetable_unchanged_mas, file_teacher, file_student)
+    delete_repeat(timetable_unchanged_mas)
+    write_json_file(unchanged_time, timetable_unchanged_mas)
 
 
 if __name__ == '__main__':

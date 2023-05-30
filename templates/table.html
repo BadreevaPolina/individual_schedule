@@ -23,15 +23,17 @@
         <form action="/individual-schedule/time-find" method="post" role="form">
             <div class="input-group input-group-spacing">
                 <div class="input-group-addon">
-                    <input type="text" class="subscribe-form" name="student" autofocus="autofocus" placeholder="Номер группы" value="{{student}}">
+                    <input type="text" class="subscribe-form" name="student" autofocus="autofocus"
+                           placeholder="Номер группы" value="{{student}}">
                 </div>
                 <div class="input-group-addon">
-                    <input type="text" class="subscribe-form" name="teacher" placeholder="ФИО преподавателя" value="{{teacher}}">
+                    <input type="text" class="subscribe-form" name="teacher" placeholder="ФИО преподавателя"
+                           value="{{teacher}}">
                 </div>
                 <div class="input-group-addon output">
                     <button type="submit">
                         Получить данные
-                         <span class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
+                        <span class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
                     </button>
                 </div>
             </div>
@@ -39,6 +41,7 @@
                    value='{{json_teachers}}'>
             <input type="hidden" name="words_error" id="words_error" value="{{words_error}}">
             <input type="hidden" name="incorrect_data" id="incorrect_data" value="{{incorrect_data}}">
+            <input type="hidden" name="answer" id="answer" value="{{answer}}">
         </form>
     </div>
 </div>
@@ -75,6 +78,7 @@
 </div>
 
 <div style="display: block;" id='calendar'></div>
+<div style="display: block;" id='calendar_unchanged'></div>
 
 <script src="static/js/info_teacher.js"></script>
 <script src="static/js/clicked_buttons.js"></script>

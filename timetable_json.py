@@ -6,7 +6,7 @@ from bs4 import BeautifulSoup
 import requests
 
 
-def add_json(day, date, times, place, data, name, incorrect_time_person):
+def add_json(day, date, times, place, subject, data, name, incorrect_time_person):
     """string add in response array"""
     if day:
         data[name][day + ', ' + date] = []
@@ -14,7 +14,7 @@ def add_json(day, date, times, place, data, name, incorrect_time_person):
             time, incorrect_time = correct_time(time, date, name)
             if incorrect_time != "":
                 incorrect_time_person.append(incorrect_time)
-            one_str = {'time_begin': time[0], 'time_end': time[1], 'place': place[i]}
+            one_str = {'time_begin': time[0], 'time_end': time[1], 'place': place[i], 'subject': subject}
             data[name][day + ', ' + date].append(one_str)
 
 
@@ -42,6 +42,12 @@ def correct_time(times, date, name):
             name + ". Предполагается, что занятие будет длиться 1:35."
 
 
+def find_subject(panel):
+    subjects = panel.find_all('span', title='Предмет')
+    for subject in subjects:
+        return subject.get_text().strip().replace("\r\n", ", ")
+
+
 def find_info(soup, data, name, incorrect_time_person):
     """collect all information"""
     panels = soup.findAll(class_='panel panel-default')
@@ -49,10 +55,11 @@ def find_info(soup, data, name, incorrect_time_person):
         title = find_day(panel)
         times = find_time(panel)
         places = find_place(panel)
+        subjects = find_subject(panel)
         if title is not None and times:
             day = title[0]
             date = title[1]
-            add_json(day, date, times, places, data, name, incorrect_time_person)
+            add_json(day, date, times, places, subjects, data, name, incorrect_time_person)
 
 
 def find_day(panel):

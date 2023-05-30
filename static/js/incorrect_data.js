@@ -5,11 +5,21 @@ if (inputFieldWarning.value === ' ' || inputFieldWarning.value === '' ||  inputF
   } else {
     hiddenElementWarning.style.display = 'block';
   }
+
 var json = document.getElementById("json_teachers").value;
-var hiddenElementError = document.querySelector('#calendar');
+var hiddenElementTable = document.querySelector('#calendar');
+var hiddenElementTableUnchanged = document.querySelector('#calendar_unchanged');
+var hiddenElementAnswer = document.querySelector('#answer').value;
 
 if (json !== "None"){
-    hiddenElementError.style.display = 'none';
+    hiddenElementTableUnchanged.style.display = 'none';
+    hiddenElementTable.style.display = 'none';
 } else {
-    hiddenElementError.style.display = 'block';
-  }
+       if(hiddenElementAnswer !== "None"){
+    hiddenElementTable.style.display = 'block';
+    } else{
+    hiddenElementTable.style.display = 'none';
+    }
+    hiddenElementTableUnchanged.style.display = 'block';
+}
+

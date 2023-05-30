@@ -20,6 +20,10 @@ h5 {
     margin: 0px 15px 15px 15px;
     background: #ffffff;
   }
+  #calendar_unchanged {
+    margin: 0px 15px 15px 15px;
+    background: #ffffff;
+  }
 
 .fc .fc-timegrid-col.fc-day-today {
     background-color: #ffffff;
@@ -43,6 +47,10 @@ h5 {
     margin: 0;
 }
 
+.fc-v-event .fc-event-main {
+    color: #000;
+    height: 100%;
+}
  /*--------------------------------------------------------------
 # Form
 --------------------------------------------------------------*/
