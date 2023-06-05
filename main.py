@@ -84,11 +84,14 @@ def get_info_teachers():
 
 def get_info_answer():
     """get information from a json"""
-    with open("static/json/answer.json", encoding="utf8") as file:
-        data = json.load(file)
-    if str(data) == "[]":
+    try:
+        with open("static/json/answer.json", encoding="utf8") as file:
+            data = json.load(file)
+        if str(data) == "[]":
+            return "None"
+        return "ok"
+    except json.decoder.JSONDecodeError:
         return "None"
-    return "ok"
 
 
 def get_info_incorrect_data():

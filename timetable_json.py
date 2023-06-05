@@ -47,7 +47,6 @@ def find_subject(panel):
     subjects = panel.find_all('span', title='Предмет')
     if subjects is not None:
         for subject in subjects:
-            print(subject)
             type_sub = subject.get_text().split(',')
             if len(type_sub) != 1:
                 type_subject = type_sub[1]
