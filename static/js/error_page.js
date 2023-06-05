@@ -5,7 +5,7 @@ function drawVisor() {
   ctx.beginPath();
   ctx.moveTo(5, 45);
   ctx.bezierCurveTo(15, 64, 45, 64, 55, 45);
-  
+
   ctx.lineTo(55, 20);
   ctx.bezierCurveTo(55, 15, 50, 10, 45, 10);
   

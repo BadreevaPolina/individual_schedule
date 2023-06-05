@@ -116,9 +116,9 @@ def check_place(end, begin, day, person, num):  # end first lesson, begin second
         if begin == i['time_begin']:
             place[1] = i['place']
         if begin == "20:40":
-            place[1] = i['place']  # Университетский проспект
+            place[1] = "Университетский проспект"
         if end == "09:30":
-            place[0] = i['place']
+            place[0] = "Университетский проспект"
     return place
 
 
@@ -148,21 +148,12 @@ def check_common_time_persons(free_time_mas, flag):
             for person1 in person1_mas:
                 for person2 in person2_mas:
                     if person1['day_month'] == person2['day_month']:
-                        result_time = common_time(person1['time_begin'], person1['time_end'],
-                                                  person2['time_begin'], person2['time_end'])
+                        result_time = compare_place(person1, person2, flag)
                         if result_time != "":
-                            if flag == "False":
-                                new_place, new_time = compare_place(result_time, person1, person2)
-                                if new_time != "" and new_place != "":
-                                    time_begin, time_end = new_time.split("-")
-                                    change_json_free_time(person1['day_month'], time_begin,
-                                                          time_end, new_place,
-                                                          free_time_mas[person_i][key_mas[p + 1]])
-                            else:
-                                time_begin, time_end = result_time.split("-")
-                                change_json_free_time(person1['day_month'], time_begin, time_end,
-                                                      person1['place_begin'],
-                                                      free_time_mas[person_i][key_mas[p + 1]])
+                            time_begin, time_end = result_time.split("-")
+                            change_json_free_time(person1['day_month'], time_begin,
+                                                  time_end, "Университетский проспект",
+                                                  free_time_mas[person_i][key_mas[p + 1]])
 
 
 def free_time_in_answer(free_time_mas, answer_mas):
@@ -221,19 +212,11 @@ def check_common_time_s_t(free, answer_mas, flag, with_day_check):
                 for j in read["student"][k2]:
                     if j['day_month'] == i['day_month']:
                         day_check = True
-                        result_time = common_time(i['time_begin'], i['time_end'],
-                                                  j['time_begin'], j['time_end'])
+                        result_time = compare_place(i, j, flag)
                         if result_time != "":
-                            if flag == "False":
-                                new_place, new_time = compare_place(result_time, i, j)
-                                if new_time != "" and new_place != "":
-                                    time_begin, time_end = break_time(new_time)
-                                    add_json_answer(i['day_month'], time_begin, time_end,
-                                                    answer_mas, color, "")
-                            else:
-                                time_begin, time_end = break_time(result_time)
-                                add_json_answer(i['day_month'], time_begin, time_end,
-                                                answer_mas, color, "")
+                            time_begin, time_end = break_time(result_time)
+                            add_json_answer(i['day_month'], time_begin, time_end,
+                                            answer_mas, color, "")
             if not day_check and with_day_check:
                 result_time = common_time(i['time_begin'], i['time_end'],
                                           "09:30", "20:40")
@@ -255,49 +238,25 @@ def common_time(b_t, e_t, b_s, e_s):  # begin_teacher....end_student
     return ""
 
 
-def compare_place(result_time, i, j):  # teacher - i, student - j
-    """ compare place between two people"""
-    result_time = result_time.split("-")
-    begin = datetime.strptime(result_time[0], "%H:%M")
-    end = datetime.strptime(result_time[1], "%H:%M")
-    res = begin.strftime('%H:%M') + "-" + end.strftime('%H:%M')
-    if i['place_begin'] == i['place_end']:
-        if j['place_begin'] == j['place_end']:
-            if i['place_begin'] == j['place_begin']:
-                return i['place_begin'], res
-            if datetime.strptime(j['time_end'], "%H:%M") - \
-                    datetime.strptime(j['time_begin'], "%H:%M") >= timedelta(hours=5, minutes=45):
-                if result_time[0] != "9:30":
-                    begin = begin + timedelta(hours=2, minutes=0)
-                if result_time[1] != "20:40":
-                    end = end - timedelta(hours=2, minutes=0)
-                result_time = begin.strftime('%H:%M') + "-" + end.strftime('%H:%M')
-                return i['place_begin'], result_time
-            return "", ""
-        return begin_or_end_equals(result_time, i, j)
-    if j['place_begin'] == j['place_end']:
-        return begin_or_end_equals(result_time, j, i)
-    return "", ""
+def compare_place(teacher, student, flag):
+    if flag == "False":
+        b_t, e_t = change_time(teacher)
+        b_s, e_s = change_time(student)
+        return common_time(b_t, e_t, b_s, e_s)
+    else:
+        return common_time(teacher['time_begin'], teacher['time_end'],
+                           student['time_begin'], student['time_end'])
 
 
-def begin_or_end_equals(result_time, i, j):
-    """compare place between two people"""
-    begin = datetime.strptime(result_time[0], "%H:%M")
-    end = datetime.strptime(result_time[1], "%H:%M")
-    res = begin.strftime('%H:%M') + "-" + end.strftime('%H:%M')
-    if i['place_begin'] == j['place_begin']:
-        if datetime.strptime(j['time_end'], "%H:%M") \
-                - datetime.strptime(result_time[0], "%H:%M") \
-                >= timedelta(hours=3, minutes=45):
-            return i['place_begin'], res
-        return "", ""
-    if i['place_end'] == j['place_end']:
-        if datetime.strptime(result_time[1], "%H:%M") \
-                - datetime.strptime(j['time_begin'], "%H:%M") \
-                >= timedelta(hours=3, minutes=45):
-            return i['place_end'], res
-        return "", ""
-    return "", ""
+def change_time(person):
+    begin = datetime.strptime(person['time_begin'], "%H:%M")
+    end = datetime.strptime(person['time_end'], "%H:%M")
+    place = "Университетский проспект"
+    if person['place_begin'] != place:
+        begin = begin + timedelta(hours=2, minutes=0)
+    if person['place_end'] != place:
+        end = end + timedelta(hours=2, minutes=0)
+    return begin.strftime('%H:%M'), end.strftime('%H:%M')
 
 
 def change_begin_time(begin):

@@ -14,6 +14,16 @@ app = Flask(__name__, static_url_path="/individual-schedule/static")
 bootstrap = Bootstrap(app)
 
 
+@app.errorhandler(500)
+def internal_error(error):
+    return render_template('error.html')
+
+
+@app.errorhandler(404)
+def not_found(error):
+    return render_template('error.html')
+
+
 @app.route("/individual-schedule/")
 def index():
     """main page"""
@@ -118,7 +128,7 @@ def find():
         teacher_result = jsonify(teacher)
         teacher, count_teacher, teacher_error = find_teacher(teacher_result.json)
         if student is None or teacher is None:
-            return render_template('error.html')
+            return not_found(404)
         json_teachers = get_info_teachers()
         words_error = write_words_error(student_error, teacher_error)
         if one_zero_teacher_table(str(flag_place), count_teacher) is not None \
@@ -184,7 +194,7 @@ def timetable():
     try:
         free_time.main(str(flag_place))
     except json.decoder.JSONDecodeError:
-        return render_template('error.html')
+        return not_found(404)
     student = request.form.get('student')
     teacher = request.form.get('teacher')
     words_error = request.form.get('words_error')
@@ -205,7 +215,7 @@ def timetable_find():
         teacher_result = jsonify(teacher)
         teacher, count_teacher, teacher_error = find_teacher(teacher_result.json)
         if student is None or teacher is None:
-            return render_template('error.html')
+            return not_found(404)
         json_teachers = get_info_teachers()
         if json_teachers == "{\"teacher\": []}":
             json_teachers = "None"
