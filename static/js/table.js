@@ -35,6 +35,7 @@
       selectable: false,
       selectMirror: true,
       nowIndicator: true,
+      eventMouseEnter: function(info) {info.el.title = info.event.extendedProps.subject + ", " +  info.event.title;},
       eventSources: [
     {
       url: 'static/json/timetable_unchanged.json'

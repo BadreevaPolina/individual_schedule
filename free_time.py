@@ -46,7 +46,7 @@ def add_json_answer(day_month, time_begin, time_end, answer_mas, color, title):
     answer_mas.append(one_str)
 
 
-def add_json_unchanged(day_month, subject, time_begin, time_end, answer_mas, color, title):
+def add_json_unchanged(day_month, type_subject, subject, time_begin, time_end, answer_mas, color, title):
     """string add in response array"""
     date = date_week(day_month)
     date_title = datetime.strptime(date, "%Y-%m-%d %H:%M:%S")
@@ -54,8 +54,8 @@ def add_json_unchanged(day_month, subject, time_begin, time_end, answer_mas, col
         title = date_title.strftime("%d.%m.%Y")
     time_begin_str = format_time(time_begin, date_title)
     time_end_str = format_time(time_end, date_title)
-    one_str = {'title': title + "," + subject, 'start': time_begin_str,
-               'end': time_end_str, 'color': color}
+    one_str = {'title': title + ", " + type_subject, 'start': time_begin_str,
+               'end': time_end_str, 'color': color, 'subject': subject}
     answer_mas.append(one_str)
 
 
@@ -317,7 +317,8 @@ def add_in_answer(file, answer_mas, color_number):
         for i in read[num]:
             for j in read[num][i]:
                 color = color_mas[color_number % 9]
-                add_json_unchanged(i.split(', ')[1], j['subject'], j['time_begin'], j['time_end'],
+                add_json_unchanged(i.split(', ')[1], j['type_subject'], j['subject'],
+                                   j['time_begin'], j['time_end'],
                                    answer_mas, color, num)
 
 
