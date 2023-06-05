@@ -5,6 +5,27 @@
     <title>Ошибка</title>
     <link href="static/css/style_error_page.css" rel="stylesheet">
     <link href="static/img/penguin.png" rel="shortcut icon">
+
+    <!-- Yandex.Metrika counter -->
+    <script type="text/javascript">
+   (function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
+   m[i].l=1*new Date();
+   for (var j = 0; j < document.scripts.length; j++) {if (document.scripts[j].src === r) { return; }}
+   k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)})
+   (window, document, "script", "https://mc.yandex.ru/metrika/tag.js", "ym");
+
+   ym(93849147, "init", {
+        clickmap:true,
+        trackLinks:true,
+        accurateTrackBounce:true,
+        webvisor:true
+   });
+
+    </script>
+    <noscript>
+        <div><img src="https://mc.yandex.ru/watch/93849147" style="position:absolute; left:-9999px;" alt=""/></div>
+    </noscript>
+    <!-- /Yandex.Metrika counter -->
 </head>
 <body>
 <div class="moon"></div>
@@ -19,39 +40,41 @@
 <div class="star star5"></div>
 
 <div class="error">
-  <div class="error__title">404</div>
-  <div class="error__subtitle">Хмм...</div>
-  <div class="error__description">Ошибка. Попробуйте снова</div>
-  <!-- <button class="error__button error__button--active">LOGIN</button> -->
-  <a href="/individual-schedule/"> <button class="error__button"> Вернуться на главную страницу</button> </a>
+    <div class="error__title">404</div>
+    <div class="error__subtitle">Хмм...</div>
+    <div class="error__description">Ошибка. Попробуйте снова</div>
+    <!-- <button class="error__button error__button--active">LOGIN</button> -->
+    <a href="/individual-schedule/">
+        <button class="error__button"> Вернуться на главную страницу</button>
+    </a>
 </div>
 
 <div class="astronaut">
-  <div class="astronaut__backpack"></div>
-  <div class="astronaut__body"></div>
-  <div class="astronaut__body__chest"></div>
-  <div class="astronaut__arm-left1"></div>
-  <div class="astronaut__arm-left2"></div>
-  <div class="astronaut__arm-right1"></div>
-  <div class="astronaut__arm-right2"></div>
-  <div class="astronaut__arm-thumb-left"></div>
-  <div class="astronaut__arm-thumb-right"></div>
-  <div class="astronaut__leg-left"></div>
-  <div class="astronaut__leg-right"></div>
-  <div class="astronaut__foot-left"></div>
-  <div class="astronaut__foot-right"></div>
-  <div class="astronaut__wrist-left"></div>
-  <div class="astronaut__wrist-right"></div>
+    <div class="astronaut__backpack"></div>
+    <div class="astronaut__body"></div>
+    <div class="astronaut__body__chest"></div>
+    <div class="astronaut__arm-left1"></div>
+    <div class="astronaut__arm-left2"></div>
+    <div class="astronaut__arm-right1"></div>
+    <div class="astronaut__arm-right2"></div>
+    <div class="astronaut__arm-thumb-left"></div>
+    <div class="astronaut__arm-thumb-right"></div>
+    <div class="astronaut__leg-left"></div>
+    <div class="astronaut__leg-right"></div>
+    <div class="astronaut__foot-left"></div>
+    <div class="astronaut__foot-right"></div>
+    <div class="astronaut__wrist-left"></div>
+    <div class="astronaut__wrist-right"></div>
 
-  <div class="astronaut__cord">
-    <canvas id="cord" height="500px" width="500px"></canvas>
-  </div>
+    <div class="astronaut__cord">
+        <canvas id="cord" height="500px" width="500px"></canvas>
+    </div>
 
-  <div class="astronaut__head">
-    <canvas id="visor" width="60px" height="60px"></canvas>
-    <div class="astronaut__head-visor-flare1"></div>
-    <div class="astronaut__head-visor-flare2"></div>
-  </div>
+    <div class="astronaut__head">
+        <canvas id="visor" width="60px" height="60px"></canvas>
+        <div class="astronaut__head-visor-flare1"></div>
+        <div class="astronaut__head-visor-flare2"></div>
+    </div>
 </div>
 <script src="static/js/error_page.js"></script>
 </body>
