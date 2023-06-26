@@ -12,6 +12,26 @@ h5 {
     font-size: 2rem;
 }
 
+#showDiv {
+  position: relative;
+  display: inline-block;
+}
+
+#showDiv:hover::before {
+    content: "Переключить на другую таблицу";
+    white-space: nowrap;
+    position: absolute;
+    top: 0;
+    left: 40px;
+    text-align: center;
+    font-size: 12px;
+    font-weight: normal;
+    background-color: #f2f2f2;
+    border-color: #ddd;
+    border: 1px solid black;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
+}
+
  /*--------------------------------------------------------------
 # Calendar
 --------------------------------------------------------------*/

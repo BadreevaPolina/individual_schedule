@@ -103,7 +103,7 @@ def get_info_incorrect_data():
         for i in data:
             for j in data[i]:
                 result = result + str(j) + '\n'
-        return result[:len(result)-1]
+        return result[:len(result) - 1]
     except (AttributeError, IndexError):
         return "None"
 
@@ -171,20 +171,13 @@ def one_zero_teacher_table(flag, count_teacher):
     return None
 
 
-def name_teachers(index_teachers):
+def name_teachers(str_teachers):
     """find selected teachers"""
-    with open("static/json/info_teacher.json", encoding="utf8") as file:
-        data_t = json.load(file)
-    try:
-        index_teachers = index_teachers.split(", ")
-        teachers = []
-        for _, index_teacher in enumerate(index_teachers):
-            for i in data_t['teacher']:
-                if i['index'] == index_teacher:
-                    teachers = teachers + [i['full_name']]
-        return teachers
-    except AttributeError:
-        return ""
+    str_teachers = str_teachers[:len(str_teachers) - 2].split(", ")
+    teachers = []
+    for _, teacher in enumerate(str_teachers):
+        teachers = teachers + [teacher]
+    return teachers
 
 
 @app.route("/individual-schedule/time", methods=["GET", "POST"])
@@ -192,7 +185,7 @@ def timetable():
     """show result page"""
     flag_place = request.form.get('flag_place')
     index_teachers = request.form.get('index_teachers')
-    teachers = name_teachers(index_teachers)
+    teachers = name_teachers(request.form.get('teachers'))
     timetable_json.main_teacher(index_teachers, teachers)
     try:
         free_time.main(str(flag_place))

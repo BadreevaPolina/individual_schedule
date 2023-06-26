@@ -88,12 +88,13 @@
             <div class="card" style="display: none;">
                 <form achion="#" onsubmit="return setAction(this)" class="form-submit" method="post">
                     <button id="button" type="submit" class="btn btn-outline-dark stretched-link">
-                        <h5 class="full_name">${full_name}</h5>
+                        <h5 class="full_name" name="full_name" id="full_name">${full_name}</h5>
                         <h4 class="post_department">${post}, ${department}</h4>
                         <input type="hidden" class="id" name="id" id="id">
                         <input type="hidden" name="flag_place" value="{{flag_place}}">
                         <input type="hidden" name="count_teacher" id="count_teacher" value="{{count_teacher}}">
                         <input type="hidden" class="index_teachers" name="index_teachers" id="index_teachers" value="">
+                        <input type="hidden" class="teachers" name="teachers" id="teachers" value="">
 
                         <input type="hidden" name="student" value="{{student}}">
                         <input type="hidden" name="teacher" value="{{teacher}}">
