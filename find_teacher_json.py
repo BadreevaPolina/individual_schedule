@@ -79,22 +79,23 @@ def main_teacher(teacher_target):
     }
 
     choice = {"teacher": []}
-    teacher_input = ""
-    teachers_error = ""
-    teachers_target = teacher_target.split(",")
+    teacher_input, teachers_error = "", ""
+    teachers_target = teacher_target.strip().split(",")
+    while "" in teachers_target:
+        teachers_target.remove("")
     try:
         for teacher in teachers_target:
             user_input = teacher.lower().strip()
             name_list = user_input.split(sep=' ')
             surname = name_list[0]
             url = 'https://timetable.spbu.ru/EducatorEvents/Index?q=' + surname
-            wbdata = requests.get(url, cookies=cookie, timeout=10).text
+            wbdata = requests.get(url, cookies=cookie, timeout=15).text
             soup = BeautifulSoup(wbdata, 'lxml')
             teachers = find_teachers(soup, user_input)
             if teachers:
-                teacher_input = teacher_input + teacher + ","
+                teacher_input = teacher_input + teacher.strip() + ", "
             else:
-                teachers_error = teachers_error + teacher + ","
+                teachers_error = teachers_error + teacher.strip() + ", "
             find_info_teachers(teachers, soup, choice)
         write_json_file('static/json/info_teacher.json', choice)
         return teacher_input, teachers_error
@@ -103,4 +104,5 @@ def main_teacher(teacher_target):
 
 
 if __name__ == '__main__':
-    main_teacher("Смирнов Михаил Николаевич, Кириленко Я А") # example
+    print(main_teacher("Смирнов Михаил Николаевич, Кириленко Я А")) # example
+    print(main_teacher("B"))

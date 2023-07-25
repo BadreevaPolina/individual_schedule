@@ -46,7 +46,7 @@ def add_json_answer(day_month, time_begin, time_end, answer_mas, color, title):
     answer_mas.append(one_str)
 
 
-def add_json_unchanged(day_month, type_subject, subject, time_begin, time_end, answer_mas, color, title):
+def add_json_unchanged(day_month, type_subject, subject, place, time_begin, time_end, answer_mas, color, title):
     """string add in response array"""
     date = date_week(day_month)
     date_title = datetime.strptime(date, "%Y-%m-%d %H:%M:%S")
@@ -54,8 +54,14 @@ def add_json_unchanged(day_month, type_subject, subject, time_begin, time_end, a
         title = date_title.strftime("%d.%m.%Y")
     time_begin_str = format_time(time_begin, date_title)
     time_end_str = format_time(time_end, date_title)
-    one_str = {'title': title + ", " + type_subject, 'start': time_begin_str,
-               'end': time_end_str, 'color': color, 'subject': subject}
+    full_place = place.split(',')
+    if len(full_place) > 1:
+        cab = full_place[len(full_place) - 1].strip()
+        title = title + ", " + type_subject + ", каб. " + cab
+    else:
+        title = title + ", " + type_subject
+    one_str = {'title': title, 'start': time_begin_str, 'end': time_end_str,
+               'color': color, 'subject': subject, 'place': place}
     answer_mas.append(one_str)
 
 
@@ -65,7 +71,7 @@ def write_json_file(file, tables):
         json.dump(tables, out_file, ensure_ascii=False, indent=4)
 
 
-def free_time(file, person, free_time_mas, flag):
+def free_time(file, person, free_time_mas, flag, place_university):
     """free time for person"""
     with open(file, encoding="utf8") as open_file:
         data = json.load(open_file)
@@ -76,12 +82,12 @@ def free_time(file, person, free_time_mas, flag):
                 for i in data[num][day]:
                     begin = i['time_begin']
                     # end first lesson, begin second lesson
-                    estimate_time(end, begin, day, person, num, free_time_mas, flag)
+                    estimate_time(end, begin, day, person, num, free_time_mas, flag, place_university)
                     end = i['time_end']
-                estimate_time(end, "20:40", day, person, num, free_time_mas, flag)
+                estimate_time(end, "20:40", day, person, num, free_time_mas, flag, place_university)
 
 
-def estimate_time(end_time, begin_time, day, person, num, free_time_mas, flag):
+def estimate_time(end_time, begin_time, day, person, num, free_time_mas, flag, place_university):
     """check if the time is fits"""
     end = datetime.strptime(end_time, "%H:%M")
     begin = datetime.strptime(begin_time, "%H:%M")
@@ -91,7 +97,7 @@ def estimate_time(end_time, begin_time, day, person, num, free_time_mas, flag):
             add_json_free_time(day, begin_time, end_time, places,
                                free_time_mas[person][num])
         else:
-            places = check_place(end_time, begin_time, day, person, num)
+            places = check_place(end_time, begin_time, day, person, num, place_university)
             if places[0] == places[1]:
                 add_json_free_time(day, begin_time, end_time,
                                    places, free_time_mas[person][num])
@@ -101,7 +107,7 @@ def estimate_time(end_time, begin_time, day, person, num, free_time_mas, flag):
                                        places, free_time_mas[person][num])
 
 
-def check_place(end, begin, day, person, num):  # end first lesson, begin second lesson
+def check_place(end, begin, day, person, num, place_university):  # end first lesson, begin second lesson
     """check location match"""
     place = ["", ""]
     if person == "teacher":
@@ -116,9 +122,9 @@ def check_place(end, begin, day, person, num):  # end first lesson, begin second
         if begin == i['time_begin']:
             place[1] = i['place']
         if begin == "20:40":
-            place[1] = "Университетский проспект"
+            place[1] = place_university
         if end == "09:30":
-            place[0] = "Университетский проспект"
+            place[0] = place_university
     return place
 
 
@@ -130,7 +136,7 @@ def change_json_free_time(day, time_begin, time_end, place, free_time_mas):
     free_time_mas.append(one_str)
 
 
-def check_common_time_persons(free_time_mas, flag):
+def check_common_time_persons(free_time_mas, flag, place_university):
     """check common time teacher(student) and teacher(student)"""
     for _, person_i in enumerate(free_time_mas):
         keys = free_time_mas[person_i].keys()
@@ -148,11 +154,11 @@ def check_common_time_persons(free_time_mas, flag):
             for person1 in person1_mas:
                 for person2 in person2_mas:
                     if person1['day_month'] == person2['day_month']:
-                        result_time = compare_place(person1, person2, flag)
+                        result_time = compare_place(person1, person2, flag, place_university)
                         if result_time != "":
                             time_begin, time_end = result_time.split("-")
                             change_json_free_time(person1['day_month'], time_begin,
-                                                  time_end, "Университетский проспект",
+                                                  time_end, place_university,
                                                   free_time_mas[person_i][key_mas[p + 1]])
 
 
@@ -182,25 +188,25 @@ def break_time_in_mas(free_time_mas):
                 j["time_begin"], j["time_end"] = break_time(j["time_begin"] + "-" + j["time_end"])
 
 
-def find_common_time(free, free_time_mas, answer_mas, flag):
+def find_common_time(free, free_time_mas, answer_mas, flag, place_university):
     """find common time depending on the situation"""
     with open(free, encoding="utf8") as file:
         read = json.load(file)
     if len(read["teacher"]) == len(read["student"]) == 1:
-        check_common_time_s_t(free, answer_mas, flag, True)
+        check_common_time_s_t(free, answer_mas, flag, True, place_university)
     elif (len(read["teacher"]) > 0 and len(read["student"]) == 0) or \
             (len(read["student"]) > 0 and len(read["teacher"]) == 0):
-        check_common_time_persons(free_time_mas, flag)
+        check_common_time_persons(free_time_mas, flag, place_university)
         break_time_in_mas(free_time_mas)
         write_json_file(free, free_time_mas)
         free_time_in_answer(free_time_mas, answer_mas)
     elif len(read["teacher"]) > 0 and len(read["student"]) > 0:
-        check_common_time_persons(free_time_mas, flag)
+        check_common_time_persons(free_time_mas, flag, place_university)
         write_json_file(free, free_time_mas)
-        check_common_time_s_t(free, answer_mas, flag, False)
+        check_common_time_s_t(free, answer_mas, flag, False, place_university)
 
 
-def check_common_time_s_t(free, answer_mas, flag, with_day_check):
+def check_common_time_s_t(free, answer_mas, flag, with_day_check, place_university):
     """check common time student and teacher"""
     color = "#4e8bb1"
     with open(free, encoding="utf8") as file:
@@ -212,7 +218,7 @@ def check_common_time_s_t(free, answer_mas, flag, with_day_check):
                 for j in read["student"][k2]:
                     if j['day_month'] == i['day_month']:
                         day_check = True
-                        result_time = compare_place(i, j, flag)
+                        result_time = compare_place(i, j, flag, place_university)
                         if result_time != "":
                             time_begin, time_end = break_time(result_time)
                             add_json_answer(i['day_month'], time_begin, time_end,
@@ -238,24 +244,23 @@ def common_time(b_t, e_t, b_s, e_s):  # begin_teacher....end_student
     return ""
 
 
-def compare_place(teacher, student, flag):
+def compare_place(person1, person2, flag, place_university):
     if flag == "False":
-        b_t, e_t = change_time(teacher)
-        b_s, e_s = change_time(student)
-        return common_time(b_t, e_t, b_s, e_s)
+        b_1, e_1 = change_time(person1, place_university)
+        b_2, e_2 = change_time(person2, place_university)
+        return common_time(b_1, e_1, b_2, e_2)
     else:
-        return common_time(teacher['time_begin'], teacher['time_end'],
-                           student['time_begin'], student['time_end'])
+        return common_time(person1['time_begin'], person1['time_end'],
+                           person2['time_begin'], person2['time_end'])
 
 
-def change_time(person):
+def change_time(person, place_university):
     begin = datetime.strptime(person['time_begin'], "%H:%M")
     end = datetime.strptime(person['time_end'], "%H:%M")
-    place = "Университетский проспект"
-    if person['place_begin'] != place:
+    if person['place_begin'] != place_university:
         begin = begin + timedelta(hours=2, minutes=0)
-    if person['place_end'] != place:
-        end = end + timedelta(hours=2, minutes=0)
+    if person['place_end'] != place_university:
+        end = end - timedelta(hours=2, minutes=0)
     return begin.strftime('%H:%M'), end.strftime('%H:%M')
 
 
@@ -318,7 +323,7 @@ def add_in_answer(file, answer_mas, color_number):
             for j in read[num][i]:
                 color = color_mas[color_number % 9]
                 add_json_unchanged(i.split(', ')[1], j['type_subject'], j['subject'],
-                                   j['time_begin'], j['time_end'],
+                                   j['full_place'], j['time_begin'], j['time_end'],
                                    answer_mas, color, num)
 
 
@@ -353,11 +358,12 @@ def main(flag):
     unchanged_time = 'static/json/timetable_unchanged.json'
 
     free_time_mas = {"teacher": {}, "student": {}}
-    free_time(file_teacher, "teacher", free_time_mas, flag)
-    free_time(file_student, "student", free_time_mas, flag)
+    place_university = "Университетский проспект"
+    free_time(file_teacher, "teacher", free_time_mas, flag, place_university)
+    free_time(file_student, "student", free_time_mas, flag, place_university)
     write_json_file(free, free_time_mas)
     answer_mas = []
-    find_common_time(free, free_time_mas, answer_mas, flag)
+    find_common_time(free, free_time_mas, answer_mas, flag, place_university)
     # check_answer_empty(answer_mas, file_teacher, file_student)
     delete_repeat(answer_mas)
     write_json_file(answer, answer_mas)

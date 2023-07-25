@@ -32,7 +32,7 @@ def parse_group(index_year, group):
         "value": "ru"
     }
     url_year_page = 'https://timetable.spbu.ru/MATH/StudyProgram/' + index_year
-    url_year_page_ru = requests.get(url_year_page, cookies=cookie, timeout=10).text
+    url_year_page_ru = requests.get(url_year_page, cookies=cookie, timeout=15).text
     html_year_page = BeautifulSoup(url_year_page_ru, "lxml")
     return current_year(html_year_page, group)
 
@@ -49,7 +49,14 @@ def find_group(tag_a, group):
 
 def find_year(html_main_page, group):
     """year of admission to university"""
-    year_group = "20" + group.split(".Б")[0]
+    study_program = "АБМС"
+    year_group = ""
+    for i in study_program:
+        if group.find(i) != -1:
+            year_group = "20" + group.split("." + i)[0]
+            break
+    if year_group == "":
+        return ""
     for tag_a in html_main_page.find_all('a', href=True, title=True):
         title_year = tag_a.text.strip()
         if title_year == year_group:
@@ -68,7 +75,7 @@ def main_student(group):
     }
     url_main_page = 'https://timetable.spbu.ru/MATH'
     try:
-        url_main_page_ru = requests.get(url_main_page, cookies=cookie, timeout=10).text
+        url_main_page_ru = requests.get(url_main_page, cookies=cookie, timeout=15).text
         html_main_page = BeautifulSoup(url_main_page_ru, "lxml")
         number = find_year(html_main_page, group)
         return number
@@ -77,4 +84,4 @@ def main_student(group):
 
 
 if __name__ == '__main__':
-    main_student("21.Б15-мм")  # example
+    print(main_student("21.Б15-мм"))  # example

@@ -9,28 +9,29 @@
 # General
 --------------------------------------------------------------*/
 body {
-  font-family: "Open Sans", sans-serif;
-  color: #000;
-  background: url("../img/bg.jpg") center center no-repeat;
-  background-attachment: fixed;
-  background-size: cover;
+    margin: 10px 10px;
+    font-family: "Open Sans", sans-serif;
+    color: #000;
+    background: url("../img/bg.jpg") center center no-repeat;
+    background-attachment: fixed;
+    background-size: cover;
 }
 
 
 @media (min-width: 992px) {
-  body {
-    background-attachment: fixed;
-  }
+    body {
+        background-attachment: fixed;
+    }
 }
 
 a {
-  color: #000;
-  text-decoration: none;
+    color: #000;
+    text-decoration: none;
 }
 
 a:hover {
-  color: #757174;
-  text-decoration: none;
+    color: #757174;
+    text-decoration: none;
 }
 
 h1,
@@ -39,11 +40,11 @@ h3,
 h4,
 h5,
 h6 {
-  font-family: "Raleway", sans-serif;
+    font-family: "Raleway", sans-serif;
 }
 
 #main {
-  position: relative;
+    position: relative;
 }
 
 h5 {
@@ -54,67 +55,67 @@ h5 {
 # Back to top button
 --------------------------------------------------------------*/
 .back-to-top {
-  position: fixed;
-  visibility: hidden;
-  opacity: 0;
-  right: 15px;
-  bottom: 15px;
-  z-index: 996;
-  background: #24b7a4;
-  width: 40px;
-  height: 40px;
-  border-radius: 50px;
-  transition: all 0.4s;
+    position: fixed;
+    visibility: hidden;
+    opacity: 0;
+    right: 15px;
+    bottom: 15px;
+    z-index: 996;
+    background: #24b7a4;
+    width: 40px;
+    height: 40px;
+    border-radius: 50px;
+    transition: all 0.4s;
 }
 
 .back-to-top i {
-  font-size: 28px;
-  color: #fff;
-  line-height: 0;
+    font-size: 28px;
+    color: #fff;
+    line-height: 0;
 }
 
 .back-to-top:hover {
-  background: #2ed6c0;
-  color: #fff;
+    background: #2ed6c0;
+    color: #fff;
 }
 
 .back-to-top.active {
-  visibility: visible;
-  opacity: 1;
+    visibility: visible;
+    opacity: 1;
 }
 
 
 .form-check-input {
-  width: 1.7em;
-  height: 1.7em;
+    width: 1.7em;
+    height: 1.7em;
 
 }
 .form-check-input[type=checkbox] {
-  border-radius: 0.55em;
+    border-radius: 0.55em;
 }
 
 /*--------------------------------------------------------------
 # Header
 --------------------------------------------------------------*/
 #header {
-  position: relative;
-  width: 100%;
-  padding: 160px 0px 0px 0px;
-  /* countdown */
+    position: relative;
+    width: 100%;
+    padding: 160px 0px 0px 0px;
+    /* countdown */
 }
 
 #header h1 {
-  margin: 0 0 10px 0;
-  font-size: 48px;
-  font-weight: 700;
-  line-height: 56px;
-  color: #fff;
+    margin: 0 0 10px 0;
+    font-size: 48px;
+    font-weight: 700;
+    line-height: 56px;
+    color: #fff;
 }
 
 #header h2 {
-  color: #eee;
-  margin-bottom: 40px;
-  font-size: 22px;
+    color: #eee;
+    margin-bottom: 40px;
+    font-size: 22px;
 }
 
 #header label {
@@ -127,117 +128,117 @@ h5 {
 }
 
 #header .countdown {
-  margin-bottom: 80px;
+    margin-bottom: 80px;
 }
 
 #header .countdown div {
-  text-align: center;
-  border: 2px solid rgba(255, 255, 255, 0.8);
-  border-radius: 8px;
-  margin: 10px 10px;
-  width: 100px;
-  padding: 15px 0;
+    text-align: center;
+    border: 2px solid rgba(255, 255, 255, 0.8);
+    border-radius: 8px;
+    margin: 10px 10px;
+    width: 100px;
+    padding: 15px 0;
 }
 
 #header .countdown div h3 {
-  font-weight: 700;
-  font-size: 32px;
-  margin-bottom: 15px;
+    font-weight: 700;
+    font-size: 32px;
+    margin-bottom: 15px;
 }
 
 #header .countdown div h4 {
-  font-size: 16px;
-  font-weight: 600;
+    font-size: 16px;
+    font-weight: 600;
 }
 
 @media (max-width: 575px) {
-  #header .countdown div {
-    width: 70px;
-    padding: 10px 0;
-    margin: 10px 8px;
-  }
+    #header .countdown div {
+        width: 70px;
+        padding: 10px 0;
+        margin: 10px 8px;
+    }
 
-  #header .countdown div h3 {
-    font-size: 28px;
-    margin-bottom: 10px;
-  }
+    #header .countdown div h3 {
+        font-size: 28px;
+        margin-bottom: 10px;
+    }
 
-  #header .countdown div h4 {
-    font-size: 14px;
-    font-weight: 500;
-  }
+    #header .countdown div h4 {
+        font-size: 14px;
+        font-weight: 500;
+    }
 }
 
 #header .subscribe {
-  font-size: 18px;
-  text-align: center;
-  margin-bottom: 40px;
+    font-size: 18px;
+    text-align: center;
+    margin-bottom: 40px;
 }
 
 #header .subscribe h4 {
-  font-size: 30px;
-  font-weight: 600;
-  color: #fff;
-  position: relative;
-  padding-bottom: 12px;
+    font-size: 30px;
+    font-weight: 600;
+    color: #fff;
+    position: relative;
+    padding-bottom: 12px;
 }
 
 #header .subscribe .subscribe-form {
-  min-width: 555px;
-  margin-top: 10px;
-  background: #fff;
-  padding: 10px 10px;
-  position: relative;
-  border-radius: 50px;
-  text-align: left;
+    min-width: 555px;
+    margin-top: 10px;
+    background: #fff;
+    padding: 10px 10px;
+    position: relative;
+    border-radius: 50px;
+    text-align: left;
 }
 
 #header .subscribe .subscribe-form input[type=text] {
-  border: 0;
-  padding: 4px 8px;
-  width: calc(100% - 100px);
+    border: 0;
+    padding: 4px 8px;
+    width: calc(100% - 100px);
 }
 
 #header .subscribe .subscribe-form button[type=submit] {
-  position: absolute;
-  top: 0;
-  right: -2px;
-  bottom: 0;
-  border: 0;
-  background: none;
-  font-size: 16px;
-  padding: 0 20px;
-  background: #24b7a4;
-  color: #fff;
-  transition: 0.3s;
-  border-radius: 50px;
-  box-shadow: 0px 2px 15px rgba(0, 0, 0, 0.1);
+    position: absolute;
+    top: 0;
+    right: -2px;
+    bottom: 0;
+    border: 0;
+    background: none;
+    font-size: 16px;
+    padding: 0 20px;
+    background: #24b7a4;
+    color: #fff;
+    transition: 0.3s;
+    border-radius: 50px;
+    box-shadow: 0px 2px 15px rgba(0, 0, 0, 0.1);
 }
 
 #header .subscribe .subscribe-form button[type=submit]:hover {
-  background: #22ae9c;
+    background: #22ae9c;
 }
 
 #header .subscribe .output button[type=submit]{
-  top: 0;
-  bottom: 0;
-  border: 0;
-  background: none;
-  font-size: 24px;
-  padding: 5px 20px;
-  background: #24b7a4;
-  color: #fff;
-  transition: 0.3s;
-  border-radius: 50px;
-  box-shadow: 0px 2px 15px rgba(0, 0, 0, 0.1);
+    top: 0;
+    bottom: 0;
+    border: 0;
+    background: none;
+    font-size: 24px;
+    padding: 5px 20px;
+    background: #24b7a4;
+    color: #fff;
+    transition: 0.3s;
+    border-radius: 50px;
+    box-shadow: 0px 2px 15px rgba(0, 0, 0, 0.1);
 }
 
 #header .subscribe .mb-3 .form-label{
-  font-size: 20px;
-  font-weight: 600;
-  color: #fff;
-  position: relative;
-  padding-bottom: 12px;
+    font-size: 20px;
+    font-weight: 600;
+    color: #fff;
+    position: relative;
+    padding-bottom: 12px;
 
 }
 
@@ -269,14 +270,10 @@ h5 {
     --bs-card-border-width: 1px;
     --bs-card-border-color: var(--bs-border-color-translucent);
     --bs-card-border-radius: 0.375rem;
-    --bs-card-box-shadow: ;
     --bs-card-inner-border-radius: calc(0.375rem - 1px);
     --bs-card-cap-padding-y: 0.5rem;
     --bs-card-cap-padding-x: 1rem;
     --bs-card-cap-bg: rgba(0, 0, 0, 0.03);
-    --bs-card-cap-color: ;
-    --bs-card-height: ;
-    --bs-card-color: ;
     --bs-card-bg: #fff;
     --bs-card-img-overlay-padding: 1rem;
     --bs-card-group-margin: 0.75rem;
@@ -291,47 +288,47 @@ h5 {
     border: var(--bs-card-border-width) solid var(--bs-card-border-color);
     border-radius: var(--bs-card-border-radius);
     border-radius: 3rem;
-    margin-bottom: 40px;
+    margin-bottom: 30px;
 }
 /*--------------------------------------------------------------
 # Sections General
 --------------------------------------------------------------*/
 section {
-  padding: 60px 0;
-  overflow: hidden;
+    padding: 60px 0;
+    overflow: hidden;
 }
 
 .section-bg {
-  background-color: #d8f7f3;
+    background-color: #d8f7f3;
 }
 
 .section-title {
-  text-align: center;
-  padding-bottom: 30px;
+    text-align: center;
+    padding-bottom: 30px;
 }
 
 .section-title h2 {
-  font-size: 32px;
-  font-weight: bold;
-  text-transform: uppercase;
-  margin-bottom: 20px;
-  padding-bottom: 20px;
-  position: relative;
+    font-size: 32px;
+    font-weight: bold;
+    text-transform: uppercase;
+    margin-bottom: 20px;
+    padding-bottom: 20px;
+    position: relative;
 }
 
 .section-title h2::after {
-  content: "";
-  position: absolute;
-  display: block;
-  width: 50px;
-  height: 2px;
-  background: #24b7a4;
-  bottom: 0;
-  left: calc(50% - 25px);
+    content: "";
+    position: absolute;
+    display: block;
+    width: 50px;
+    height: 2px;
+    background: #24b7a4;
+    bottom: 0;
+    left: calc(50% - 25px);
 }
 
 .section-title p {
-  margin-bottom: 0;
+    margin-bottom: 0;
 }
 
 

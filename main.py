@@ -1,7 +1,7 @@
 """main page"""
 import json
 
-from flask import Flask, render_template, request, jsonify
+from flask import Flask, render_template, request
 from flask_bootstrap import Bootstrap
 
 import find_student_page
@@ -33,9 +33,9 @@ def index():
 def delete_comma(error, basic):
     """delete comma when returning input"""
     if error != "":
-        error = error[:len(error) - 1]
+        error = error[:len(error) - 2]
     else:
-        basic = basic[:len(basic) - 1]
+        basic = basic[:len(basic) - 2]
     return error, basic
 
 
@@ -45,17 +45,16 @@ def find_teacher(input_form):
     if teachers is None:
         return None, None, ""
     teachers_error, teachers = delete_comma(teachers_error, teachers)
-    return teachers, len(teachers[:len(teachers) - 1].split(",")), teachers_error
+    return teachers, len(teachers[:len(teachers) - 2].split(",")), teachers_error
 
 
-def find_student(input_form):
-    """information about id student"""
-    students = input_form.split(",")
+def edit_input_students(input_form):
+    """edit input field for students"""
+    students = input_form.strip().split(",")
     if len(students) == 1:
         students = input_form.split(" ")
-    id_students = ""
-    students_full = ""
-    students_error = ""
+    students = [i for i in students if i != ""]
+    id_students, students_full, students_error = "", "", ""
     for student in students:
         student_properly = student.strip().upper()
         student_properly = student_properly.replace("-ММ", "-мм")
@@ -68,18 +67,26 @@ def find_student(input_form):
             id_students = id_students + id_student + ","
             students_full = students_full + student_properly + ", "
         elif id_student == "":
-            students_error = students_error + student + ", "
-    students_full = students_full[:len(students_full) - 1]
+            students_error = students_error + student.strip() + ", "
+    return id_students, students_full, students_error
+
+
+def find_student(input_form):
+    """information about id student"""
+    id_students, students_full, students_error = edit_input_students(input_form)
     timetable_json.main_student(id_students, students_full.split(","))
     students_error, students_full = delete_comma(students_error, students_full)
-    return students_full, students_error[:len(students_error) - 1]
+    return students_full, students_error
 
 
 def get_info_teachers():
     """get information from a json"""
     with open("static/json/info_teacher.json", encoding="utf8") as file:
         data = json.load(file)
-    return str(data).replace("\'", "\"")
+    json_teachers = str(data).replace("\'", "\"")
+    if json_teachers == "{\"teacher\": []}":
+        json_teachers = "None"
+    return json_teachers
 
 
 def get_info_answer():
@@ -123,15 +130,12 @@ def write_words_error(student_error, teacher_error):
 def find():
     """main page with information about teachers or return result timetable"""
     if request.method == 'POST':
-        student = request.form.get('student')
-        teacher = request.form.get('teacher')
+        student, teacher = request.form.get('student'), request.form.get('teacher')
         flag_place = 'flag_place' in request.form
-        student_result = jsonify(student)
-        student, student_error = find_student(student_result.json)
-        teacher_result = jsonify(teacher)
-        teacher, count_teacher, teacher_error = find_teacher(teacher_result.json)
+        student, student_error = find_student(student)
+        teacher, count_teacher, teacher_error = find_teacher(teacher)
         if student is None or teacher is None:
-            return not_found(404)
+            return internal_error(505)
         json_teachers = get_info_teachers()
         words_error = write_words_error(student_error, teacher_error)
         if one_zero_teacher_table(str(flag_place), count_teacher) is not None \
@@ -158,8 +162,7 @@ def one_zero_teacher_table(flag, count_teacher):
         timetable_json.main_teacher("", [""])
         free_time.main(flag)
         return "ok"
-    indexs = ""
-    teachers = []
+    indexs, teachers = "", []
     if len(data_t['teacher']) == count_teacher:
         for i in data_t['teacher']:
             if i['index']:
@@ -183,16 +186,14 @@ def name_teachers(str_teachers):
 @app.route("/individual-schedule/time", methods=["GET", "POST"])
 def timetable():
     """show result page"""
-    flag_place = request.form.get('flag_place')
-    index_teachers = request.form.get('index_teachers')
+    flag_place, index_teachers = request.form.get('flag_place'), request.form.get('index_teachers')
     teachers = name_teachers(request.form.get('teachers'))
     timetable_json.main_teacher(index_teachers, teachers)
     try:
         free_time.main(str(flag_place))
     except json.decoder.JSONDecodeError:
-        return not_found(404)
-    student = request.form.get('student')
-    teacher = request.form.get('teacher')
+        return internal_error(505)
+    student, teacher = request.form.get('student'), request.form.get('teacher')
     words_error = request.form.get('words_error')
     incorrect_data = get_info_incorrect_data()
     return render_template('table.html', student=student, teacher=teacher, json_teachers="None",
@@ -203,18 +204,12 @@ def timetable():
 def timetable_find():
     """show find teachers or result page"""
     if request.method == 'POST':
-        student = request.form.get('student')
-        teacher = request.form.get('teacher')
-
-        student_result = jsonify(student)
-        student, student_error = find_student(student_result.json)
-        teacher_result = jsonify(teacher)
-        teacher, count_teacher, teacher_error = find_teacher(teacher_result.json)
+        student, teacher = request.form.get('student'), request.form.get('teacher')
+        student, student_error = find_student(student)
+        teacher, count_teacher, teacher_error = find_teacher(teacher)
         if student is None or teacher is None:
-            return not_found(404)
+            return internal_error(505)
         json_teachers = get_info_teachers()
-        if json_teachers == "{\"teacher\": []}":
-            json_teachers = "None"
         words_error = write_words_error(student_error, teacher_error)
         if one_zero_teacher_table("False", count_teacher) is not None and words_error == "None":
             incorrect_data = get_info_incorrect_data()

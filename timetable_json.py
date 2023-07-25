@@ -6,7 +6,7 @@ from bs4 import BeautifulSoup
 import requests
 
 
-def add_json(day, date, times, place, subject, data, name, type_subject, incorrect_time_person):
+def add_json(day, date, times, place, subject, data, name, type_subject, full_place, incorrect_time_person):
     """string add in response array"""
     if day:
         data[name][day + ', ' + date] = []
@@ -15,6 +15,7 @@ def add_json(day, date, times, place, subject, data, name, type_subject, incorre
             if incorrect_time != "":
                 incorrect_time_person.append(incorrect_time)
             one_str = {'time_begin': time[0], 'time_end': time[1], 'place': place[i],
+                       'full_place': full_place[i],
                        'subject': subject, 'type_subject': type_subject}
             data[name][day + ', ' + date].append(one_str)
 
@@ -64,12 +65,12 @@ def find_info(soup, data, name, incorrect_time_person):
     for panel in panels:
         title = find_day(panel)
         times = find_time(panel)
-        places = find_place(panel)
+        places, full_places = find_place(panel)
         subjects, type_subjects = find_subject(panel)
         if title is not None and times:
             day = title[0]
             date = title[1]
-            add_json(day, date, times, places, subjects, data, name, type_subjects, incorrect_time_person)
+            add_json(day, date, times, places, subjects, data, name, type_subjects, full_places, incorrect_time_person)
 
 
 def find_day(panel):
@@ -77,8 +78,7 @@ def find_day(panel):
     days = panel.find_all('h4', class_='panel-title')
     for day_str in days:
         only_day = day_str.get_text().split(',')
-        day_param = only_day[0].strip()
-        date_param = only_day[1].strip()
+        day_param,  date_param = only_day[0].strip(), only_day[1].strip()
         title = [day_param.lower(), date_param.lower()]
         return title
 
@@ -98,11 +98,14 @@ def find_place(panel):
     places = panel.findAll(True, {"class": ["col-sm-3 studyevent-locations",
                                             "col-sm-3 studyevent-multiple-locations"]})
     place_array = []
+    full_place_array = []
     for place in places:
         street = place.get_text().split(',')
+        full_place = place.get_text().strip()
         place_param = street[0].strip()
         place_array.append(place_param)
-    return place_array
+        full_place_array.append(full_place)
+    return place_array, full_place_array
 
 
 def today_week():
@@ -131,7 +134,7 @@ def info_schedule(person_mas, name, url, incorrect_time_person):
     weeks = few_weeks()
     for week in weeks:
         url_person = url + str(week)
-        url_person_ru = requests.get(url_person, cookies=cookie, timeout=10).text
+        url_person_ru = requests.get(url_person, cookies=cookie, timeout=15).text
         html_person = BeautifulSoup(url_person_ru, "lxml")
         find_info(html_person, person_mas, name, incorrect_time_person)
     return person_mas, incorrect_time_person
@@ -175,17 +178,20 @@ def main_student(input_index, name):
     empty_file('static/json/incorrect_data.json')
     write_json_file('static/json/incorrect_data.json', {"student": [], "teacher": []})
     student_mas = {}
-    student_index = input_index.split(',')
-    for i, index in enumerate(student_index):
-        if index not in ('', ' '):
-            url_student = 'https://timetable.spbu.ru/MATH/StudentGroupEvents/Primary/' \
-                          + index + '/'
-            student_mas[name[i]] = {}
-            student_mas, incorrect_time["student"] = info_schedule(student_mas,
-                                                                   name[i], url_student,
-                                                                   incorrect_time["student"])
-    write_incorrect_time('static/json/incorrect_data.json', incorrect_time, "student")
-    write_json_file('static/json/student.json', student_mas)
+    try:
+        student_index = input_index.split(',')
+        for i, index in enumerate(student_index):
+            if index not in ('', ' '):
+                url_student = 'https://timetable.spbu.ru/MATH/StudentGroupEvents/Primary/' \
+                              + index + '/'
+                student_mas[name[i]] = {}
+                student_mas, incorrect_time["student"] = info_schedule(student_mas,
+                                                                       name[i], url_student,
+                                                                       incorrect_time["student"])
+        write_incorrect_time('static/json/incorrect_data.json', incorrect_time, "student")
+        write_json_file('static/json/student.json', student_mas)
+    except (AttributeError, IndexError, ConnectionError, FileNotFoundError, json.JSONDecodeError):
+        pass
 
 
 if __name__ == '__main__':
