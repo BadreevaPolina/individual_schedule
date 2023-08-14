@@ -20,18 +20,18 @@
     ======================================================== -->
     <!-- Yandex.Metrika counter -->
     <script type="text/javascript">
-   (function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
-   m[i].l=1*new Date();
-   for (var j = 0; j < document.scripts.length; j++) {if (document.scripts[j].src === r) { return; }}
-   k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)})
-   (window, document, "script", "https://mc.yandex.ru/metrika/tag.js", "ym");
+        (function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
+            m[i].l=1*new Date();
+            for (var j = 0; j < document.scripts.length; j++) {if (document.scripts[j].src === r) { return; }}
+            k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)})
+        (window, document, "script", "https://mc.yandex.ru/metrika/tag.js", "ym");
 
-   ym(93849147, "init", {
-        clickmap:true,
-        trackLinks:true,
-        accurateTrackBounce:true,
-        webvisor:true
-   });
+        ym(93849147, "init", {
+            clickmap:true,
+            trackLinks:true,
+            accurateTrackBounce:true,
+            webvisor:true
+        });
 
     </script>
     <noscript>
@@ -43,7 +43,6 @@
 <body>
 <header id="header" class="d-flex align-items-center">
     <div class="container d-flex flex-column align-items-center">
-
         <h1>Добро пожаловать</h1>
         <h2>на сайт для создания индивидуального графика!</h2>
 
@@ -51,16 +50,16 @@
             <form action="/individual-schedule/find" method="post" role="form">
                 <div class="mb-3">
                     <h4>Введите номер группы:</h4>
-                    <input type="text" class="subscribe-form" name="student" autofocus="autofocus" value="{{student}}">
+                    <input type="text" class="subscribe-form" name="student" autofocus="autofocus"
+                           value="{{ session['student'] }}">
                 </div>
                 <div class="mb-3">
                     <h4>Введите ФИО преподавателя:</h4>
-                    <input type="text" class="subscribe-form" name="teacher" value="{{teacher}}">
+                    <input type="text" class="subscribe-form" name="teacher" value="{{ session['teacher'] }}">
                 </div>
                 <div class="form-check">
                     <input class="form-check-input" type="checkbox" id="flexCheck" name="flag_place"
-                           {{checkbox_checked}}
-                           value="{{flag_place}}">
+                           {{ checkbox_checked }} value="{{  session['flag_place'] }}">
                     <label class="form-check-label" for="flexCheck">
                         Местоположение не важно
                     </label>
@@ -72,8 +71,8 @@
                     </button>
                 </div>
                 <input type="hidden" class="json_teachers" name="json_teachers" id="json_teachers"
-                       value='{{json_teachers}}'>
-                <input type="hidden" name="words_error" id="words_error" value="{{words_error}}">
+                       value="{{ json_teachers }}">
+                <input type="hidden" name="words_error" id="words_error" value="{{ words_error }}">
             </form>
         </div>
     </div>
@@ -83,7 +82,7 @@
         <div class="col-md-12">
             <div class="error" id="error" style="display: none;">
                 <h5 style="color:red;">Не найдено</h5>
-                <h4 style="color:red;">{{words_error}}</h4>
+                <h4 style="color:red;">{{ words_error }}</h4>
             </div>
             <div class="card" style="display: none;">
                 <form achion="#" onsubmit="return setAction(this)" class="form-submit" method="post">
@@ -91,20 +90,27 @@
                         <h5 class="full_name" name="full_name" id="full_name">${full_name}</h5>
                         <h4 class="post_department">${post}, ${department}</h4>
                         <input type="hidden" class="id" name="id" id="id">
-                        <input type="hidden" name="flag_place" value="{{flag_place}}">
-                        <input type="hidden" name="count_teacher" id="count_teacher" value="{{count_teacher}}">
+                        <input type="hidden" name="count_teacher" id="count_teacher" value="{{ count_teacher }}">
                         <input type="hidden" class="index_teachers" name="index_teachers" id="index_teachers" value="">
                         <input type="hidden" class="teachers" name="teachers" id="teachers" value="">
-
-                        <input type="hidden" name="student" value="{{student}}">
-                        <input type="hidden" name="teacher" value="{{teacher}}">
-                        <input type="hidden" name="words_error" value="{{words_error}}">
+                        <input type="hidden" name="words_error" value="{{ words_error}}">
                     </button>
                 </form>
             </div>
         </div>
     </div>
 </div>
+<section class="cookie">
+    <div class="txt">
+        <p class="">
+            Использование куков необходимо <br>
+            для полноценной работы сайта.
+        </p>
+    </div>
+    <div>
+        <a class="btn accept">Понятно</a>
+    </div>
+</section>
 
 <script src="static/js/info_teacher.js"></script>
 <script src="static/js/clicked_buttons.js"></script>

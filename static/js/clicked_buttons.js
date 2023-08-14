@@ -25,40 +25,44 @@ function defineButtons() {
         mas = mas.filter(function(item) {
             return !error.includes(item);
         });
-
+        for (let i = 0; i < mas.length; i++) {
+            mas[i] = mas[i].split(" ")[0];
+        }
         let c = 0, j = 0;
-        for (let i = 1; i < buttons.length; i++) {
-            let surname = button[i].querySelector('h5.full_name').textContent.substring(0, mas[j].length);
-            if(surname.toLowerCase() !== mas[j].toLowerCase()){
-                if(c === 1){
-                    buttons[i-1].style.backgroundColor = "#212529";
-                    buttons[i-1].style.color = "#fff";
-                    let id = button[i-1].querySelector(".id").value + ", ";
-                    let name = button[i-1].querySelector(".full_name").textContent + ", ";
-                    ids += id;
-                    names += name;
-                    countTeachers--;
-                    if (countTeachers == 0){
-                        button[i-1].click();
+        if(buttons.length != mas.length + 1){
+            for (let i = 1; i < buttons.length; i++) {
+                let surname = button[i].querySelector('h5.full_name').textContent.substring(0, mas[j].length);
+                if(surname.toLowerCase() !== mas[j].toLowerCase()){
+                    if(c === 1){
+                        buttons[i-1].style.backgroundColor = "#212529";
+                        buttons[i-1].style.color = "#fff";
+                        let id = button[i-1].querySelector(".id").value + ", ";
+                        let name = button[i-1].querySelector(".full_name").textContent + ", ";
+                        ids += id;
+                        names += name;
+                        countTeachers--;
+                        if (countTeachers == 0){
+                            button[i-1].click();
+                        }
                     }
-                }
-                if(i === buttons.length - 1){
-                    buttons[i].style.backgroundColor = "#212529";
-                    buttons[i].style.color = "#fff";
-                    let id = button[i].querySelector(".id").value + ", ";
-                    let name = button[i].querySelector(".full_name").textContent + ", ";
-                    ids += id;
-                    names += name;
-                    countTeachers--;
-                    if (countTeachers == 0){
-                        button[i].click();
+                    if(i === buttons.length - 1){
+                        buttons[i].style.backgroundColor = "#212529";
+                        buttons[i].style.color = "#fff";
+                        let id = button[i].querySelector(".id").value + ", ";
+                        let name = button[i].querySelector(".full_name").textContent + ", ";
+                        ids += id;
+                        names += name;
+                        countTeachers--;
+                        if (countTeachers == 0){
+                            button[i].click();
+                        }
                     }
+                    c = 1;
+                    j++;
                 }
-                c = 1;
-                j++;
-            }
-            else{
-                c++;
+                else{
+                    c++;
+                }
             }
         }
     }
@@ -87,7 +91,7 @@ function changeColor(event) {
 
 function setAction(form) {
     if (countTeachers == 0){
-        form.action = "/individual-schedule/time";
+        form.action = "/individual-schedule/timetable";
         form.querySelector(".index_teachers").value = ids;
         form.querySelector(".teachers").value = names;
         return true;

@@ -27,10 +27,7 @@ document.addEventListener('DOMContentLoaded', function() {
         selectable: false,
         selectMirror: true,
         nowIndicator: true,
-        eventSources: [
-            {
-                url: 'static/json/answer.json'
-            }]
+        events: JSON.parse(document.getElementById("answer_json").value)
     });
     const calendarUnchanged = new FullCalendar.Calendar(document.getElementById('calendar_unchanged'), {
         initialView: 'timeGridWeek',
@@ -67,10 +64,7 @@ document.addEventListener('DOMContentLoaded', function() {
             }
             info.el.title = info.event.extendedProps.subject + ", \n" +
             info.event.extendedProps.place + ", \n" + resultTittle;},
-        eventSources: [
-            {
-                url: 'static/json/timetable_unchanged.json'
-            }]
+        events: JSON.parse(document.getElementById("timetable_unchanged_json").value)
     });
 
     calendar.render();

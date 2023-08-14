@@ -1,8 +1,23 @@
 function initialize() {
+    cookieNotify();
     disableSubmitButton();
     checkInputFieldError();
     parseJson();
     scrollToTeacherInfo();
+}
+
+function cookieNotify() {
+    $(document).ready(function(){
+        var isRead = localStorage.getItem("cookie_read");
+        if (isRead === "true") {
+            $(".cookie").hide();
+        }
+
+        $(".accept").click(function(){
+            localStorage.setItem("cookie_read", "true");
+            $(".cookie").hide();
+        });
+    });
 }
 
 function disableSubmitButton() {

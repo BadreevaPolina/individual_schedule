@@ -1,7 +1,11 @@
 """main page"""
 import json
+import os
+from datetime import timedelta
 
-from flask import Flask, render_template, request
+import requests
+from bs4 import BeautifulSoup
+from flask import Flask, render_template, request, session, redirect, url_for
 from flask_bootstrap import Bootstrap
 
 import find_student_page
@@ -10,18 +14,24 @@ import free_time
 import timetable_json
 
 app = Flask(__name__, static_url_path="/individual-schedule/static")
-
+app.secret_key = os.urandom(30).hex()  # 'aCYmoeg6rRHI_ifsz04D8A'
+app.permanent_session_lifetime = timedelta(days=3650)
 bootstrap = Bootstrap(app)
-
-
-@app.errorhandler(500)
-def internal_error(error):
-    return render_template('error.html')
 
 
 @app.errorhandler(404)
 def not_found(error):
-    return render_template('error.html')
+    return render_template('error.html', error="Ошибка. Страница не найдена.")
+
+
+@app.errorhandler(500)
+def timetable_error(error):
+    return render_template('error.html', error="Ошибка. На timetable что-то пошло не так.")
+
+
+@app.errorhandler(500)
+def internal_error(error):
+    return render_template('error.html', error="Ошибка. Попробуйте снова.")
 
 
 @app.route("/individual-schedule/")
@@ -89,16 +99,11 @@ def get_info_teachers():
     return json_teachers
 
 
-def get_info_answer():
-    """get information from a json"""
-    try:
-        with open("static/json/answer.json", encoding="utf8") as file:
-            data = json.load(file)
-        if str(data) == "[]":
-            return "None"
-        return "ok"
-    except json.decoder.JSONDecodeError:
-        return "None"
+def get_info_json_file(filename):
+    with open(filename, encoding="utf8") as file:
+        data = json.load(file)
+    json_file = str(data).replace("\'", "\"")
+    return json_file
 
 
 def get_info_incorrect_data():
@@ -130,26 +135,39 @@ def write_words_error(student_error, teacher_error):
 def find():
     """main page with information about teachers or return result timetable"""
     if request.method == 'POST':
-        student, teacher = request.form.get('student'), request.form.get('teacher')
+        session['student'], session['teacher'] = request.form.get('student'), request.form.get('teacher')
         flag_place = 'flag_place' in request.form
-        student, student_error = find_student(student)
-        teacher, count_teacher, teacher_error = find_teacher(teacher)
+        session['flag_place'] = str(flag_place)
+        student, student_error = find_student(session['student'])
+        teacher, count_teacher, teacher_error = find_teacher(session['teacher'])
         if student is None or teacher is None:
             return internal_error(505)
+        if student == "" and teacher == "":
+            if not timetable_work():
+                return timetable_error(505)
+
         json_teachers = get_info_teachers()
         words_error = write_words_error(student_error, teacher_error)
-        if one_zero_teacher_table(str(flag_place), count_teacher) is not None \
+        if one_zero_teacher_table(session['flag_place'], count_teacher) is not None \
                 and words_error == "None":
-            incorrect_data = get_info_incorrect_data()
-            return render_template('table.html', student=student, teacher=teacher,
-                                   incorrect_data=incorrect_data, json_teachers="None",
-                                   words_error=words_error, answer=get_info_answer())
-        return render_template('index.html', student=student + student_error,
-                               teacher=teacher + teacher_error, flag_place=flag_place,
-                               checkbox_checked="checked" if flag_place else "",
+            return redirect(url_for('timetable'))
+        return render_template('index.html', checkbox_checked="checked" if flag_place else "",
                                count_teacher=count_teacher, json_teachers=json_teachers,
-                               words_error=words_error, answer=get_info_answer())
-    return render_template('index.html', json_teachers="None", words_error="None")
+                               words_error=words_error)
+    return render_template('index.html')
+
+
+def timetable_work():
+    cookie = {
+        "_culture": "ru",
+        "value": "ru"
+    }
+    url_page = 'https://timetable.spbu.ru/'
+    url_ru = requests.get(url_page, cookies=cookie, timeout=15).text
+    html_person = BeautifulSoup(url_ru, "lxml")
+    if html_person.find('h2').text is not None and html_person.find('h2').text == "Ошибка ":
+        return False
+    return True
 
 
 def one_zero_teacher_table(flag, count_teacher):
@@ -158,17 +176,17 @@ def one_zero_teacher_table(flag, count_teacher):
         data_t = json.load(file)
     with open("static/json/student.json", encoding="utf8") as file:
         data_s = json.load(file)
-    if len(data_t['teacher']) == 0 and len(data_s) > 1:
+    if len(data_t['teacher']) == 0 and len(data_s) >= 1:
         timetable_json.main_teacher("", [""])
         free_time.main(flag)
         return "ok"
-    indexs, teachers = "", []
+    indices, teachers = "", []
     if len(data_t['teacher']) == count_teacher:
         for i in data_t['teacher']:
             if i['index']:
-                indexs = indexs + i['index'] + ","
+                indices = indices + i['index'] + ","
                 teachers = teachers + [i['full_name']]
-        timetable_json.main_teacher(indexs, teachers)
+        timetable_json.main_teacher(indices, teachers)
         free_time.main(flag)
         return flag
     return None
@@ -183,44 +201,57 @@ def name_teachers(str_teachers):
     return teachers
 
 
-@app.route("/individual-schedule/time", methods=["GET", "POST"])
+def get_info_schedule():
+    incorrect_data = get_info_incorrect_data()
+    timetable_unchanged_json = get_info_json_file("static/json/timetable_unchanged.json")
+    answer_json = get_info_json_file("static/json/answer.json")
+    return incorrect_data, timetable_unchanged_json, answer_json
+
+
+@app.route("/individual-schedule/timetable", methods=["GET", "POST"])
 def timetable():
     """show result page"""
-    flag_place, index_teachers = request.form.get('flag_place'), request.form.get('index_teachers')
-    teachers = name_teachers(request.form.get('teachers'))
-    timetable_json.main_teacher(index_teachers, teachers)
-    try:
-        free_time.main(str(flag_place))
-    except json.decoder.JSONDecodeError:
-        return internal_error(505)
-    student, teacher = request.form.get('student'), request.form.get('teacher')
-    words_error = request.form.get('words_error')
-    incorrect_data = get_info_incorrect_data()
-    return render_template('table.html', student=student, teacher=teacher, json_teachers="None",
-                           words_error=words_error, incorrect_data=incorrect_data, answer=get_info_answer())
+    if request.method == 'GET':
+        incorrect_data, timetable_unchanged_json, answer_json = get_info_schedule()
+        return render_template('table.html', incorrect_data=incorrect_data, json_teachers="None",
+                               timetable_unchanged_json=timetable_unchanged_json,
+                               answer_json=answer_json)
+    if request.method == 'POST':
+        try:
+            session['flag_place'], index_teachers = request.form.get('flag_place'), request.form.get('index_teachers')
+            teachers = name_teachers(request.form.get('teachers'))
+            words_error = request.form.get('words_error')
+            timetable_json.main_teacher(index_teachers, teachers)
+            free_time.main(session['flag_place'])
+        except (json.decoder.JSONDecodeError, TypeError):
+            return internal_error(505)
+        session['flag_place'] = "False"
+        incorrect_data, timetable_unchanged_json, answer_json = get_info_schedule()
+        return render_template('table.html', incorrect_data=incorrect_data,
+                               timetable_unchanged_json=timetable_unchanged_json,
+                               answer_json=answer_json, json_teachers="None", words_error=words_error)
 
 
-@app.route("/individual-schedule/time-find", methods=["GET", "POST"])
+@app.route("/individual-schedule/timetable-find", methods=["GET", "POST"])
 def timetable_find():
     """show find teachers or result page"""
     if request.method == 'POST':
-        student, teacher = request.form.get('student'), request.form.get('teacher')
-        student, student_error = find_student(student)
-        teacher, count_teacher, teacher_error = find_teacher(teacher)
+        session['student'], session['teacher'] = request.form.get('student'), request.form.get('teacher')
+        student, student_error = find_student(session['student'])
+        teacher, count_teacher, teacher_error = find_teacher(session['teacher'])
         if student is None or teacher is None:
             return internal_error(505)
+        if student == "" and teacher == "":
+            if not timetable_work():
+                return timetable_error(505)
         json_teachers = get_info_teachers()
         words_error = write_words_error(student_error, teacher_error)
-        if one_zero_teacher_table("False", count_teacher) is not None and words_error == "None":
-            incorrect_data = get_info_incorrect_data()
-            return render_template('table.html', student=student, teacher=teacher,
-                                   words_error=words_error, incorrect_data=incorrect_data,
-                                   json_teachers="None", answer=get_info_answer())
-        return render_template('table.html', student=student + student_error,
-                               teacher=teacher + teacher_error,
-                               count_teacher=count_teacher, json_teachers=json_teachers,
-                               words_error=words_error, incorrect_data="None", answer=get_info_answer())
-    return render_template('table.html')
+        session['flag_place'] = "False"
+        if one_zero_teacher_table(session['flag_place'], count_teacher) is not None \
+                and words_error == "None":
+            return redirect(url_for('timetable'))
+        return render_template('table.html', count_teacher=count_teacher, json_teachers=json_teachers,
+                               words_error=words_error, incorrect_data="None", answer_json="[]")
 
 
 if __name__ == '__main__':

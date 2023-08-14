@@ -30,9 +30,13 @@ def find_teachers(soup, user_input):
             user_target = user_input.split(" ")
             users = name.lower().split(" ")
             if len(user_target) == len(users):
-                if user_target[0] == users[0] \
+                if user_target[0] == users[0][: len(user_target[0])] \
                         and user_target[1] == users[1][: len(user_target[1])] \
                         and user_target[2] == users[2][: len(user_target[2])]:
+                    teachers.append((name, elem))
+            elif len(user_target) == len(users) - 1:
+                if user_target[0] == users[0][: len(user_target[0])] \
+                        and user_target[1] == users[1][: len(user_target[1])]:
                     teachers.append((name, elem))
     return teachers
 
@@ -104,5 +108,4 @@ def main_teacher(teacher_target):
 
 
 if __name__ == '__main__':
-    print(main_teacher("Смирнов Михаил Николаевич, Кириленко Я А")) # example
-    print(main_teacher("B"))
+    print(main_teacher("Кир Я А"))  # example

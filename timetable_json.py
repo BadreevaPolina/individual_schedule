@@ -16,7 +16,7 @@ def add_json(day, date, times, place, subject, data, name, type_subject, full_pl
                 incorrect_time_person.append(incorrect_time)
             one_str = {'time_begin': time[0], 'time_end': time[1], 'place': place[i],
                        'full_place': full_place[i],
-                       'subject': subject, 'type_subject': type_subject}
+                       'subject': subject[i], 'type_subject': type_subject[i]}
             data[name][day + ', ' + date].append(one_str)
 
 
@@ -40,11 +40,13 @@ def correct_time(times, date, name):
     begin = datetime.strptime(time[0], "%H:%M")
     end = begin + timedelta(hours=1, minutes=35)
     return [begin.strftime('%H:%M'), end.strftime('%H:%M')], "Не указано время конца пары " + \
-            date + " в " + begin.strftime('%H:%M') + " - " + \
-            name + ". Предполагается, что занятие будет длиться 1:35."
+           date + " в " + begin.strftime('%H:%M') + " - " + \
+           name + ". Предполагается, что занятие будет длиться 1:35."
 
 
 def find_subject(panel):
+    name_subjects = []
+    type_subjects = []
     subjects = panel.find_all('span', title='Предмет')
     if subjects is not None:
         for subject in subjects:
@@ -55,8 +57,9 @@ def find_subject(panel):
             else:
                 type_subject = type_sub
                 name_subject = ""
-            return name_subject.strip().replace("\r\n", ", "), type_subject.strip().replace("\r\n", "")
-    return None, None
+            name_subjects.append(name_subject.strip().replace("\r\n", ", "))
+            type_subjects.append(type_subject.strip().replace("\r\n", ""))
+    return name_subjects, type_subjects
 
 
 def find_info(soup, data, name, incorrect_time_person):
@@ -78,7 +81,7 @@ def find_day(panel):
     days = panel.find_all('h4', class_='panel-title')
     for day_str in days:
         only_day = day_str.get_text().split(',')
-        day_param,  date_param = only_day[0].strip(), only_day[1].strip()
+        day_param, date_param = only_day[0].strip(), only_day[1].strip()
         title = [day_param.lower(), date_param.lower()]
         return title
 
@@ -101,10 +104,10 @@ def find_place(panel):
     full_place_array = []
     for place in places:
         street = place.get_text().split(',')
-        full_place = place.get_text().strip()
+        full_place = place.get_text().strip().split('\r\n')
         place_param = street[0].strip()
         place_array.append(place_param)
-        full_place_array.append(full_place)
+        full_place_array.append(full_place[0])
     return place_array, full_place_array
 
 

@@ -156,10 +156,12 @@ def check_common_time_persons(free_time_mas, flag, place_university):
                     if person1['day_month'] == person2['day_month']:
                         result_time = compare_place(person1, person2, flag, place_university)
                         if result_time != "":
-                            time_begin, time_end = result_time.split("-")
-                            change_json_free_time(person1['day_month'], time_begin,
-                                                  time_end, place_university,
-                                                  free_time_mas[person_i][key_mas[p + 1]])
+                            time_b, time_e = break_time(result_time)
+                            if time_b != time_e:
+                                time_begin, time_end = result_time.split("-")
+                                change_json_free_time(person1['day_month'], time_begin,
+                                                      time_end, place_university,
+                                                      free_time_mas[person_i][key_mas[p + 1]])
 
 
 def free_time_in_answer(free_time_mas, answer_mas):
@@ -221,13 +223,14 @@ def check_common_time_s_t(free, answer_mas, flag, with_day_check, place_universi
                         result_time = compare_place(i, j, flag, place_university)
                         if result_time != "":
                             time_begin, time_end = break_time(result_time)
-                            add_json_answer(i['day_month'], time_begin, time_end,
-                                            answer_mas, color, "")
+                            if time_begin != time_end:
+                                add_json_answer(i['day_month'], time_begin, time_end, answer_mas, color, "")
             if not day_check and with_day_check:
                 result_time = common_time(i['time_begin'], i['time_end'],
                                           "09:30", "20:40")
                 time_begin, time_end = break_time(result_time)
-                add_json_answer(i['day_month'], time_begin, time_end, answer_mas, color, "")
+                if time_begin != time_end:
+                    add_json_answer(i['day_month'], time_begin, time_end, answer_mas, color, "")
 
 
 def common_time(b_t, e_t, b_s, e_s):  # begin_teacher....end_student
@@ -305,9 +308,12 @@ def break_time(result_time):
     res = ["", ""]
     result_time = result_time.split("-")
     begin = datetime.strptime(result_time[0], "%H:%M")
+    begin_new = change_begin_time(begin)
     end = datetime.strptime(result_time[1], "%H:%M")
-    res[0] = change_begin_time(begin).strftime('%H:%M')
-    res[1] = change_end_time(end).strftime('%H:%M')
+    end_new = change_end_time(end)
+    if end_new - begin_new >= timedelta(hours=1, minutes=35):
+        res[0] = begin_new.strftime('%H:%M')
+        res[1] = end_new.strftime('%H:%M')
     return res
 
 
@@ -334,12 +340,27 @@ def check_answer_empty(answer_mas, file_teacher, file_student):
         add_in_answer(file_teacher, answer_mas, 5)
 
 
-def delete_repeat(answer_mas):
+def delete_repeat(timetable_unchanged_mas): # что делать если разные здания
     """delete repeat in answer"""
     i = 1
-    while i <= len(answer_mas) - 1:
-        if answer_mas[i] == answer_mas[i - 1]:
-            answer_mas.pop(i)
+    while i <= len(timetable_unchanged_mas) - 1:
+        answer1, answer2 = timetable_unchanged_mas[i].copy(), timetable_unchanged_mas[i - 1].copy()
+        title1, title2 = answer1['title'].split(",", 2), answer2['title'].split(",", 2)
+        place1, place2 = answer1['place'].split(",", 1), answer2['place'].split(",", 1)
+        places = "," + place1[len(place1) - 1] + ",\n" + place2[len(place2) - 1]
+        cabs = "," + title1[len(title1) - 1] + "," + title2[len(title2) - 1]
+
+        answer1['title'], answer2['title'] = ",".join(title2[:2]), ",".join(title2[:2])
+        answer1['place'], answer2['place'] = ",".join(place1[:1]), ",".join(place2[:1])
+
+        if timetable_unchanged_mas[i] == timetable_unchanged_mas[i - 1]:
+            timetable_unchanged_mas.pop(i)
+        elif answer1 == answer2:
+            answer1['title'] = answer1['title'] + cabs
+            answer1['place'] = answer1['place'] + places
+            timetable_unchanged_mas[i - 1] = answer1
+            timetable_unchanged_mas.pop(i)
+
         else:
             i += 1
 
@@ -365,7 +386,6 @@ def main(flag):
     answer_mas = []
     find_common_time(free, free_time_mas, answer_mas, flag, place_university)
     # check_answer_empty(answer_mas, file_teacher, file_student)
-    delete_repeat(answer_mas)
     write_json_file(answer, answer_mas)
 
     timetable_unchanged_mas = []
