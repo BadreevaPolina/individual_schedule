@@ -73,5 +73,19 @@ function animate() {
     y3Forward ? y3 += 1 : y3 -= 1;
 }
 
+function getUrlParam(param) {
+    let queryString = window.location.search;
+    let urlParams = new URLSearchParams(queryString);
+    return urlParams.get(param);
+}
+
 drawVisor();
 animate();
+if (getUrlParam('error') != undefined){
+    document.querySelector('.error__subtitle').innerHTML = getUrlParam('error');
+}
+document.addEventListener('keydown', function(event) {
+    if (event.keyCode === 13) {
+        document.getElementById('MainPage').click();
+    }
+});

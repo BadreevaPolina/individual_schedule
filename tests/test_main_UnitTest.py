@@ -9,6 +9,7 @@ class MainTest(unittest.TestCase):
         self.assertEqual(edit_input_students("21.Б15"), ('334764,', '21.Б15-мм, ', ''))
         self.assertEqual(edit_input_students("21Б15"), ('334764,', '21.Б15-мм, ', ''))
         self.assertEqual(edit_input_students("21б15"), ('334764,', '21.Б15-мм, ', ''))
+        self.assertEqual(edit_input_students("21б15,,,,,,,,,"), ('334764,', '21.Б15-мм, ', ''))
         self.assertEqual(edit_input_students("2115"), ('', '', '2115, '))
 
         self.assertEqual(edit_input_students("21.Б15, 21.Б11"), ('334764,334755,', '21.Б15-мм, 21.Б11-мм, ', ''))

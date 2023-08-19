@@ -5,6 +5,7 @@ from free_time import *
 
 class FreeTimeTest(unittest.TestCase):
     def test_compare_place(self):
+        place_university = "Университетский проспект"
         person1 = {'day': 'суббота',
                    'day_month': '24 июня',
                    'time_begin': '11:35',
@@ -17,7 +18,7 @@ class FreeTimeTest(unittest.TestCase):
                    'place_begin': 'Университетский проспект',
                    'time_end': '15:00',
                    'place_end': 'Университетский проспект'}
-        self.assertEqual(compare_place(person1, person2, "False"), "11:35-15:00")
+        self.assertEqual(compare_place(person1, person2, "False", place_university), "11:35-15:00")
 
         person1 = {'day': 'суббота',
                    'day_month': '24 июня',
@@ -31,7 +32,7 @@ class FreeTimeTest(unittest.TestCase):
                    'place_begin': 'Университетский проспект',
                    'time_end': '15:00',
                    'place_end': 'Университетский проспект'}
-        self.assertEqual(compare_place(person1, person2, "False"), "13:15-15:00")
+        self.assertEqual(compare_place(person1, person2, "False", place_university), "13:15-15:00")
 
         person1 = {'day': 'суббота',
                    'day_month': '24 июня',
@@ -45,7 +46,7 @@ class FreeTimeTest(unittest.TestCase):
                    'place_begin': 'Университетский проспект',
                    'time_end': '15:00',
                    'place_end': 'Другой проспект'}
-        self.assertEqual(compare_place(person1, person2, "False"), "")
+        self.assertEqual(compare_place(person1, person2, "False", place_university), "")
 
     def test_common_time(self):
         self.assertEqual(common_time('11:15', '13:15', '11:15', '13:15'), "11:15-13:15")
@@ -53,6 +54,7 @@ class FreeTimeTest(unittest.TestCase):
         self.assertEqual(common_time('9:30', '17:15', '11:15', '13:40'), "11:15-13:40")
 
     def test_change_time(self):
+        place_university = "Университетский проспект"
         person1 = {'day': 'суббота',
                    'day_month': '24 июня',
                    'time_begin': '11:15',
@@ -66,11 +68,11 @@ class FreeTimeTest(unittest.TestCase):
                    'place_begin': 'Университетский проспект',
                    'time_end': '15:00',
                    'place_end': 'Университетский проспект'}
-
-        self.assertEqual(change_time(person1), ('13:15', '20:40'))
-        self.assertEqual(change_time(person2), ('09:30', '15:00'))
+        self.assertEqual(change_time(person1, place_university), ('13:15', '20:40'))
+        self.assertEqual(change_time(person2, place_university), ('09:30', '15:00'))
 
     def test_check_common_time_persons(self):
+        place_university = "Университетский проспект"
         free_time_mas = \
             {'teacher': {'Person1':
                 [
@@ -112,7 +114,7 @@ class FreeTimeTest(unittest.TestCase):
              'time_begin': '09:30',
              'time_end': '13:00'}]},
             'student': {'21.Б08-мм': []}}
-        check_common_time_persons(free_time_mas, "False")
+        check_common_time_persons(free_time_mas, "False", place_university)
         self.assertEqual(free_time_mas, answer)
 
         free_time_mas = {'teacher': {'Person1': [
@@ -130,5 +132,5 @@ class FreeTimeTest(unittest.TestCase):
                      'place_begin': 'Университетский проспект',
                      'time_end': '20:40',
                      'place_end': 'Университетский проспект'}]}}
-        check_common_time_persons(free_time_mas, "False")
+        check_common_time_persons(free_time_mas, "False", place_university)
         self.assertEqual(free_time_mas, {'teacher': {'Person2': []}})

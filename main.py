@@ -5,7 +5,7 @@ from datetime import timedelta
 
 import requests
 from bs4 import BeautifulSoup
-from flask import Flask, render_template, request, session, redirect, url_for
+from flask import Flask, render_template, request, session, url_for, jsonify
 from flask_bootstrap import Bootstrap
 
 import find_student_page
@@ -26,12 +26,12 @@ def not_found(error):
 
 @app.errorhandler(500)
 def timetable_error(error):
-    return render_template('error.html', error="Ошибка. На timetable что-то пошло не так.")
+    return jsonify({'message': 'Ошибка. На timetable что-то пошло не так.'}), 500
 
 
 @app.errorhandler(500)
 def internal_error(error):
-    return render_template('error.html', error="Ошибка. Попробуйте снова.")
+    return jsonify({'message': 'Ошибка. Попробуйте снова.'}), 500
 
 
 @app.route("/individual-schedule/")
@@ -51,34 +51,40 @@ def delete_comma(error, basic):
 
 def find_teacher(input_form):
     """information about teachers"""
-    teachers, teachers_error = find_teacher_json.main_teacher(input_form)
-    if teachers is None:
+    try:
+        teachers, teachers_error = find_teacher_json.main_teacher(input_form)
+        if teachers is None:
+            return None, None, ""
+        teachers_error, teachers = delete_comma(teachers_error, teachers)
+        return teachers, len(teachers[:len(teachers) - 2].split(",")), teachers_error
+    except AttributeError:
         return None, None, ""
-    teachers_error, teachers = delete_comma(teachers_error, teachers)
-    return teachers, len(teachers[:len(teachers) - 2].split(",")), teachers_error
 
 
 def edit_input_students(input_form):
     """edit input field for students"""
-    students = input_form.strip().split(",")
-    if len(students) == 1:
-        students = input_form.split(" ")
-    students = [i for i in students if i != ""]
-    id_students, students_full, students_error = "", "", ""
-    for student in students:
-        student_properly = student.strip().upper()
-        student_properly = student_properly.replace("-ММ", "-мм")
-        if "-мм" not in student_properly:
-            student_properly += "-мм"
-        if "." not in student_properly:
-            student_properly = student_properly[:2] + "." + student_properly[2:]
-        id_student = find_student_page.main_student(student_properly)
-        if id_student is not None and id_student != "":
-            id_students = id_students + id_student + ","
-            students_full = students_full + student_properly + ", "
-        elif id_student == "":
-            students_error = students_error + student.strip() + ", "
-    return id_students, students_full, students_error
+    try:
+        students = input_form.strip().split(",")
+        if len(students) == 1:
+            students = input_form.split(" ")
+        students = [i for i in students if i != ""]
+        id_students, students_full, students_error = "", "", ""
+        for student in students:
+            student_properly = student.strip().upper()
+            student_properly = student_properly.replace("-ММ", "-мм")
+            if "-мм" not in student_properly:
+                student_properly += "-мм"
+            if "." not in student_properly:
+                student_properly = student_properly[:2] + "." + student_properly[2:]
+            id_student = find_student_page.main_student(student_properly)
+            if id_student is not None and id_student != "":
+                id_students = id_students + id_student + ","
+                students_full = students_full + student_properly + ", "
+            elif id_student == "":
+                students_error = students_error + student.strip() + ", "
+        return id_students, students_full, students_error
+    except AttributeError:
+        return "", "", ""
 
 
 def find_student(input_form):
@@ -115,7 +121,10 @@ def get_info_incorrect_data():
         for i in data:
             for j in data[i]:
                 result = result + str(j) + '\n'
-        return result[:len(result) - 1]
+        if result == '' or result == ' ':
+            return "None"
+        else:
+            return result[:len(result) - 1]
     except (AttributeError, IndexError):
         return "None"
 
@@ -129,32 +138,6 @@ def write_words_error(student_error, teacher_error):
     if words_error == "":
         words_error = "None"
     return words_error
-
-
-@app.route('/individual-schedule/find', methods=["GET", "POST"])
-def find():
-    """main page with information about teachers or return result timetable"""
-    if request.method == 'POST':
-        session['student'], session['teacher'] = request.form.get('student'), request.form.get('teacher')
-        flag_place = 'flag_place' in request.form
-        session['flag_place'] = str(flag_place)
-        student, student_error = find_student(session['student'])
-        teacher, count_teacher, teacher_error = find_teacher(session['teacher'])
-        if student is None or teacher is None:
-            return internal_error(505)
-        if student == "" and teacher == "":
-            if not timetable_work():
-                return timetable_error(505)
-
-        json_teachers = get_info_teachers()
-        words_error = write_words_error(student_error, teacher_error)
-        if one_zero_teacher_table(session['flag_place'], count_teacher) is not None \
-                and words_error == "None":
-            return redirect(url_for('timetable'))
-        return render_template('index.html', checkbox_checked="checked" if flag_place else "",
-                               count_teacher=count_teacher, json_teachers=json_teachers,
-                               words_error=words_error)
-    return render_template('index.html')
 
 
 def timetable_work():
@@ -218,24 +201,27 @@ def timetable():
                                answer_json=answer_json)
     if request.method == 'POST':
         try:
-            session['flag_place'], index_teachers = request.form.get('flag_place'), request.form.get('index_teachers')
+            index_teachers = request.form.get('index_teachers')
             teachers = name_teachers(request.form.get('teachers'))
             words_error = request.form.get('words_error')
             timetable_json.main_teacher(index_teachers, teachers)
             free_time.main(session['flag_place'])
         except (json.decoder.JSONDecodeError, TypeError):
             return internal_error(505)
-        session['flag_place'] = "False"
         incorrect_data, timetable_unchanged_json, answer_json = get_info_schedule()
         return render_template('table.html', incorrect_data=incorrect_data,
                                timetable_unchanged_json=timetable_unchanged_json,
                                answer_json=answer_json, json_teachers="None", words_error=words_error)
 
 
-@app.route("/individual-schedule/timetable-find", methods=["GET", "POST"])
-def timetable_find():
+@app.route('/individual-schedule/find', methods=["GET", "POST"])
+def find():
     """show find teachers or result page"""
     if request.method == 'POST':
+        flag_place = request.form.get('flag_place')
+        if flag_place is None:
+            flag_place = "False"
+        session['flag_place'] = str(flag_place)
         session['student'], session['teacher'] = request.form.get('student'), request.form.get('teacher')
         student, student_error = find_student(session['student'])
         teacher, count_teacher, teacher_error = find_teacher(session['teacher'])
@@ -244,14 +230,16 @@ def timetable_find():
         if student == "" and teacher == "":
             if not timetable_work():
                 return timetable_error(505)
+
         json_teachers = get_info_teachers()
         words_error = write_words_error(student_error, teacher_error)
-        session['flag_place'] = "False"
-        if one_zero_teacher_table(session['flag_place'], count_teacher) is not None \
-                and words_error == "None":
-            return redirect(url_for('timetable'))
-        return render_template('table.html', count_teacher=count_teacher, json_teachers=json_teachers,
-                               words_error=words_error, incorrect_data="None", answer_json="[]")
+        check = one_zero_teacher_table(session['flag_place'], count_teacher)
+        if check is not None and words_error == "None":
+            return jsonify({'redirect': url_for('timetable')})
+        else:
+            return jsonify({'count_teacher': count_teacher,
+                            'json_teachers': json_teachers,
+                            'words_error': words_error})
 
 
 if __name__ == '__main__':

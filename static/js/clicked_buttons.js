@@ -2,8 +2,12 @@ $(function(){
     setTimeout(listenButtons, 500);
 });
 
-let countTeachers = Number(document.getElementById("count_teacher").value);
-let ids = "", names = "";
+if (window.countTeachers === undefined) {
+    let countTeachers, ids, names;
+}
+countTeachers = Number(document.getElementById("count_teacher").value);
+ids = "", names = "";
+
 
 function listenButtons() {
     const buttons = document.querySelectorAll('.btn.btn-outline-dark.stretched-link');
@@ -21,18 +25,24 @@ function defineButtons() {
         const teachers = document.querySelector('input[name="teacher"]').value;
         const errorElement = document.getElementById("error");
         const error = errorElement.querySelector("h4").textContent.split(", ");
-        let mas = teachers.split(", ");
-        mas = mas.filter(function(item) {
-            return !error.includes(item);
+        let list = teachers.split(",");
+        list = list.map(function(item) {
+            let trimmedItem = item.trim();
+            if (!error.includes(trimmedItem)) {
+                return trimmedItem;
+            }
         });
-        for (let i = 0; i < mas.length; i++) {
-            mas[i] = mas[i].split(" ")[0];
+        list = list.filter(function(item) {
+            return item !== '';
+        });
+        for (let i = 0; i < list.length; i++) {
+            list[i] = list[i].split(" ")[0];
         }
         let c = 0, j = 0;
-        if(buttons.length != mas.length + 1){
+        if(buttons.length != list.length + 1){
             for (let i = 1; i < buttons.length; i++) {
-                let surname = button[i].querySelector('h5.full_name').textContent.substring(0, mas[j].length);
-                if(surname.toLowerCase() !== mas[j].toLowerCase()){
+                let surname = button[i].querySelector('h5.full_name').textContent.substring(0, list[j].length);
+                if(surname.toLowerCase() !== list[j].toLowerCase()){
                     if(c === 1){
                         buttons[i-1].style.backgroundColor = "#212529";
                         buttons[i-1].style.color = "#fff";

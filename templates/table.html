@@ -41,7 +41,7 @@
 <body>
 <div class="container d-flex flex-column align-items-center">
     <div class="subscribe">
-        <form action="/individual-schedule/timetable-find" method="post" role="form">
+        <form action="/individual-schedule/find" method="post" role="form" onsubmit="find(); return false;">
             <div class="input-group input-group-spacing">
                 <div class="input-group-addon">
                     <input type="text" class="subscribe-form" name="student" autofocus="autofocus"
@@ -70,8 +70,8 @@
             </div>
             <input type="hidden" class="json_teachers" name="json_teachers" id="json_teachers"
                    value="{{ json_teachers }}">
-            <input type="hidden" name="words_error" id="words_error" value="{{ words_error }}">
-            <input type="hidden" name="incorrect_data" id="incorrect_data" value="{{ incorrect_data }}">
+            <input type="hidden" name="words_error" value="{{ words_error }}">
+            <input type="hidden" name="incorrect_data" value="{{ incorrect_data }}">
         </form>
     </div>
 </div>
@@ -81,11 +81,11 @@
         <div class="col-md-12">
             <div class="error" id="error" style="display: none;">
                 <h5 style="color:red;">Не найдено</h5>
-                <h4 style="color:red;">{{ words_error }}</h4>
+                <h4 style="color:red;" id="words_error">{{ words_error }}</h4>
             </div>
             <div class="warning" id="warning" style="display: none;">
                 <h5 style="color:red;">Предупреждение</h5>
-                <h4 style="color:red;">{{ incorrect_data }}</h4>
+                <h4 style="color:red;" id="incorrect_data">{{ incorrect_data }}</h4>
             </div>
             <div class="card" style="display: none;">
                 <form achion="#" onsubmit="return setAction(this)" class="form-submit" method="post">
@@ -110,7 +110,7 @@
 <input type="hidden" id="answer_json" value="{{ answer_json }}">
 <input type="hidden" id="timetable_unchanged_json" value="{{ timetable_unchanged_json }}">
 
-<section class="cookie">
+<section class="cookie" style="display: none;">
     <div class="txt">
         <p class="">
             Использование куков необходимо <br>
@@ -121,7 +121,7 @@
         <a class="btn accept">Понятно</a>
     </div>
 </section>
-
+<script src="static/js/find.js"></script>
 <script src="static/js/info_teacher.js"></script>
 <script src="static/js/clicked_buttons.js"></script>
 <script src="static/js/table.js"></script>

@@ -1,5 +1,6 @@
 function initialize() {
     cookieNotify();
+    checkboxPlace();
     disableSubmitButton();
     checkInputFieldError();
     parseJson();
@@ -8,9 +9,10 @@ function initialize() {
 
 function cookieNotify() {
     $(document).ready(function(){
-        var isRead = localStorage.getItem("cookie_read");
-        if (isRead === "true") {
-            $(".cookie").hide();
+        let isRead = localStorage.getItem("cookie_read");
+        console.log(isRead);
+        if (isRead === null) {
+            $(".cookie").show();
         }
 
         $(".accept").click(function(){
@@ -27,11 +29,23 @@ function disableSubmitButton() {
         submitButton.find('.spinner-border').removeClass('d-none');
     });
 }
+function checkboxPlace() {
+    const checkbox = document.getElementById("flexCheck");
+    if(checkbox !== null){
+        checkbox.addEventListener('click', function() {
+            if (checkbox.checked) {
+                checkbox.value = "True";
+            } else {
+                checkbox.value = "False";
+            }
+        });
+    }
+}
 
 function checkInputFieldError() {
     const hiddenElementError = document.querySelector('.error');
-    const inputFieldError = document.querySelector('#words_error');
-    if (inputFieldError.value === ' ' || inputFieldError.value === '' || inputFieldError.value === 'None') {
+    const inputFieldError = document.querySelector('input[name="words_error"]').value;
+    if (inputFieldError === ' ' || inputFieldError === '' || inputFieldError === 'None') {
         hiddenElementError.style.display = 'none';
     } else {
         hiddenElementError.style.display = 'block';
@@ -58,6 +72,7 @@ function parseJson() {
 }
 
 function displayTeacherCards(full_name, post, department, index) {
+    $('.card').slice(1).remove();
     $(".card:first").hide();
     for (let i = 0; i < index.length; i++) {
         const elms = document.querySelectorAll("[id='id']");
