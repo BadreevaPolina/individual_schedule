@@ -162,8 +162,10 @@ def check_common_time_persons(free_time_dict, flag, place_university):
 
             free_time_dict[person_i][key_list[p + 1]] = []
             for person1 in person1_dict:
+                day_check = False
                 for person2 in person2_dict:
                     if person1['day_month'] == person2['day_month']:
+                        day_check = True
                         result_time = compare_place(person1, person2, flag, place_university)
                         if result_time != "":
                             time_b, time_e = break_time(result_time)
@@ -172,12 +174,23 @@ def check_common_time_persons(free_time_dict, flag, place_university):
                                 change_json_free_time(person1['day_month'], time_begin,
                                                       time_end, place_university,
                                                       free_time_dict[person_i][key_list[p + 1]])
+                if person_i == "student":
+                    if not day_check:
+                        change_json_free_time(person1['day_month'], person1['time_begin'],
+                                              person1['time_end'], place_university,
+                                              free_time_dict[person_i][key_list[p + 1]])
+                    person2_dict[:] = [person2 for person2 in person2_dict if person1['day_month'] != person2['day_month']]
+            if person_i == "student":
+                for person2 in person2_dict:
+                    change_json_free_time(person2['day_month'], person2['time_begin'],
+                                          person2['time_end'], place_university,
+                                          free_time_dict[person_i][key_list[p + 1]])
 
 
 def free_time_in_answer(free_time_dict, answer_list):
     """make response a free time file"""
     color_list = ["#71AB7E", "#ffcc99", "#E3DD95", "#6D6D6e", "#F1B7B3",
-                 "#B8A8CC", "#99ccff", "#73d978", "#ccff66"]
+                  "#B8A8CC", "#99ccff", "#73d978", "#ccff66"]
     color_number = 0
     count = len(free_time_dict['student']) + len(free_time_dict['teacher'])
     for i in free_time_dict:
