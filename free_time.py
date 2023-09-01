@@ -78,12 +78,22 @@ def free_time(file, person, free_time_dict, flag, place_university):
         for num in data:
             free_time_dict[person][num] = []
             for day in data[num]:
+                prev = None
                 end = "09:30"
                 for i in data[num][day]:
                     begin = i['time_begin']
                     # end first lesson, begin second lesson
+                    if prev is not None and prev['time_begin'] == i['time_begin']:
+                        if prev['time_end'] > i['time_end']:
+                            i['time_end'] = prev['time_end']
+                    elif prev is not None and prev['time_end'] == i['time_end']:
+                        if prev['time_begin'] <= i['time_begin']:
+                            i['time_begin'] = prev['time_begin']
+                        else:
+                            free_time_dict[person][num].pop()
                     estimate_time(end, begin, day, person, num, free_time_dict, flag, place_university)
                     end = i['time_end']
+                    prev = i.copy()
                 estimate_time(end, "20:40", day, person, num, free_time_dict, flag, place_university)
 
 
@@ -205,7 +215,7 @@ def find_common_time(free, free_time_dict, answer_list, flag, place_university):
     elif len(read["teacher"]) > 0 and len(read["student"]) > 0:
         check_common_time_persons(free_time_dict, flag, place_university)
         write_json_file(free, free_time_dict)
-        check_common_time_s_t(free, answer_list, flag, False, place_university)
+        check_common_time_s_t(free, answer_list, flag, True, place_university)
 
 
 def check_common_time_s_t(free, answer_list, flag, with_day_check, place_university):
@@ -226,11 +236,11 @@ def check_common_time_s_t(free, answer_list, flag, with_day_check, place_univers
                             if time_begin != time_end:
                                 add_json_answer(i['day_month'], time_begin, time_end, answer_list, color, "")
             if not day_check and with_day_check:
-                result_time = common_time(i['time_begin'], i['time_end'],
-                                          "09:30", "20:40")
-                time_begin, time_end = break_time(result_time)
-                if time_begin != time_end:
-                    add_json_answer(i['day_month'], time_begin, time_end, answer_list, color, "")
+                result_time = common_time(i['time_begin'], i['time_end'], "09:30", "20:40")
+                if result_time != "":
+                    time_begin, time_end = break_time(result_time)
+                    if time_begin != time_end:
+                        add_json_answer(i['day_month'], time_begin, time_end, answer_list, color, "")
 
 
 def common_time(b_t, e_t, b_s, e_s):  # begin_teacher....end_student

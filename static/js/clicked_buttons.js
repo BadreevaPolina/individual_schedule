@@ -41,13 +41,13 @@ function defineButtons() {
         let c = 0, j = 0;
         if(buttons.length != list.length + 1){
             for (let i = 1; i < buttons.length; i++) {
-                let surname = button[i].querySelector('h5.full_name').textContent.substring(0, list[j].length);
+                let surname = buttons[i].querySelector('h5.full_name').textContent.substring(0, list[j].length);
                 if(surname.toLowerCase() !== list[j].toLowerCase()){
                     if(c === 1){
                         buttons[i-1].style.backgroundColor = "#212529";
                         buttons[i-1].style.color = "#fff";
-                        let id = button[i-1].querySelector(".id").value + ", ";
-                        let name = button[i-1].querySelector(".full_name").textContent + ", ";
+                        let id = buttons[i-1].querySelector(".id").value + ", ";
+                        let name = buttons[i-1].querySelector(".full_name").textContent + ", ";
                         ids += id;
                         names += name;
                         countTeachers--;
@@ -58,13 +58,13 @@ function defineButtons() {
                     if(i === buttons.length - 1){
                         buttons[i].style.backgroundColor = "#212529";
                         buttons[i].style.color = "#fff";
-                        let id = button[i].querySelector(".id").value + ", ";
-                        let name = button[i].querySelector(".full_name").textContent + ", ";
+                        let id = buttons[i].querySelector(".id").value + ", ";
+                        let name = buttons[i].querySelector(".full_name").textContent + ", ";
                         ids += id;
                         names += name;
                         countTeachers--;
                         if (countTeachers == 0){
-                            button[i].click();
+                            buttons[i].click();
                         }
                     }
                     c = 1;
