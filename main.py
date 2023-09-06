@@ -3,6 +3,7 @@ import json
 import os
 import logging
 from datetime import timedelta
+from urllib.parse import parse_qs, unquote_plus
 
 import requests
 from bs4 import BeautifulSoup
@@ -17,6 +18,7 @@ import timetable_json
 app = Flask(__name__, static_url_path="/individual-schedule/static")
 app.secret_key = os.urandom(30).hex()  # 'aCYmoeg6rRHI_ifsz04D8A'
 app.permanent_session_lifetime = timedelta(days=3650)
+app.config['JSON_AS_ASCII'] = False
 bootstrap = Bootstrap(app)
 
 
@@ -239,15 +241,17 @@ def timetable():
 def find():
     """show find teachers or result page"""
     if request.method == "POST":
-        flag_place = request.form.get("flag_place")
+        data = request.data.decode('utf-8')
+        params = parse_qs(data)
+        student = unquote_plus(params.get('student')[0])
+        teacher = unquote_plus(params.get('teacher')[0])
+        flag_place = params.get('flag_place')[0]
         if flag_place is None:
             flag_place = "False"
         session["flag_place"] = str(flag_place)
-        session["student"], session["teacher"] = request.form.get(
-            "student"
-        ), request.form.get("teacher")
-        student, student_error = find_student(session["student"])
-        teacher, count_teacher, teacher_error = find_teacher(session["teacher"])
+        session["student"], session["teacher"] = student, teacher
+        student, student_error = find_student(student)
+        teacher, count_teacher, teacher_error = find_teacher(teacher)
         if student is None or teacher is None:
             return internal_error_page(505)
         if student == "" and teacher == "":

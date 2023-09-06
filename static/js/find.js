@@ -10,6 +10,7 @@ function find() {
         url: '/individual-schedule/find',
         type: 'POST',
         data: { student: student, teacher: teacher, flag_place: flag_place },
+        contentType: "application/json; charset=utf-8",
         dataType: 'json',
         success: function(response) {
             let currentPage = location.href;
