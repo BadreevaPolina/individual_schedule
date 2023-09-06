@@ -9,13 +9,18 @@ import requests
 
 def add_json(full_name, post, department, index, choice):
     """string add in response array"""
-    one_str = {'full_name': full_name, 'post': post, 'department': department, 'index': index}
+    one_str = {
+        "full_name": full_name,
+        "post": post,
+        "department": department,
+        "index": index,
+    }
     choice["teacher"].append(one_str)
 
 
 def write_json_file(file, data):
     """add response array in file"""
-    with open(file, "w", encoding='utf-8') as out_file:
+    with open(file, "w", encoding="utf-8") as out_file:
         json.dump(data, out_file, ensure_ascii=False, indent=4)
 
 
@@ -31,13 +36,17 @@ def find_teachers(soup, user_input):
             user_target = user_input.split(" ")
             users = name.lower().split(" ")
             if len(user_target) == len(users):
-                if user_target[0] == users[0][: len(user_target[0])] \
-                        and user_target[1] == users[1][: len(user_target[1])] \
-                        and user_target[2] == users[2][: len(user_target[2])]:
+                if (
+                    user_target[0] == users[0][: len(user_target[0])]
+                    and user_target[1] == users[1][: len(user_target[1])]
+                    and user_target[2] == users[2][: len(user_target[2])]
+                ):
                     teachers.append((name, elem))
             elif len(user_target) == len(users) - 1:
-                if user_target[0] == users[0][: len(user_target[0])] \
-                        and user_target[1] == users[1][: len(user_target[1])]:
+                if (
+                    user_target[0] == users[0][: len(user_target[0])]
+                    and user_target[1] == users[1][: len(user_target[1])]
+                ):
                     teachers.append((name, elem))
     return teachers
 
@@ -51,14 +60,14 @@ def find_teacher_post(soup, elem):
 def find_teacher_department(soup, elem):
     """information about department"""
     department = soup.find_all("div", class_="col-sm-7")
-    return department[elem].get_text().strip().replace("\r\n", ", ").replace("\"", "")
+    return department[elem].get_text().strip().replace("\r\n", ", ").replace('"', "")
 
 
 def find_teacher_index(soup, elem):
     """information about index"""
     count = 0
     for tag_a in soup.find_all(onclick=True):
-        line = str(tag_a['onclick'])
+        line = str(tag_a["onclick"])
         result = re.findall(r"[0-9]+", line)
         if count == elem:
             return result[0]
@@ -78,10 +87,7 @@ def find_info_teachers(teachers, soup, choice):
 
 def main_teacher(teacher_target):
     """get information about suitable teachers"""
-    cookie = {
-        "_culture": "ru",
-        "value": "ru"
-    }
+    cookie = {"_culture": "ru", "value": "ru"}
 
     choice = {"teacher": []}
     teacher_input, teachers_error = "", ""
@@ -91,23 +97,23 @@ def main_teacher(teacher_target):
     try:
         for teacher in teachers_target:
             user_input = teacher.lower().strip()
-            name_list = user_input.split(sep=' ')
+            name_list = user_input.split(sep=" ")
             surname = name_list[0]
-            url = 'https://timetable.spbu.ru/EducatorEvents/Index?q=' + surname
+            url = "https://timetable.spbu.ru/EducatorEvents/Index?q=" + surname
             wbdata = requests.get(url, cookies=cookie, timeout=15).text
-            soup = BeautifulSoup(wbdata, 'lxml')
+            soup = BeautifulSoup(wbdata, "lxml")
             teachers = find_teachers(soup, user_input)
             if teachers:
                 teacher_input = teacher_input + teacher.strip() + ", "
             else:
                 teachers_error = teachers_error + teacher.strip() + ", "
             find_info_teachers(teachers, soup, choice)
-        write_json_file('static/json/info_teacher.json', choice)
+        write_json_file("static/json/info_teacher.json", choice)
         return teacher_input, teachers_error
     except Exception as e:
         logging.exception(e)
         return None, None
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     print(main_teacher("Кир Я А"))  # example
