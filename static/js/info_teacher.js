@@ -10,7 +10,6 @@ function initialize() {
 function cookieNotify() {
     $(document).ready(function(){
         let isRead = localStorage.getItem("cookie_read");
-        console.log(isRead);
         if (isRead === null) {
             $(".cookie").show();
         }

@@ -1,4 +1,5 @@
 """jsons with timetable information"""
+import logging
 from datetime import datetime
 from datetime import timedelta
 import json
@@ -170,8 +171,8 @@ def main_teacher(input_index, name):
                                                                        incorrect_time["teacher"])
         write_json_file('static/json/teacher.json', teacher_mas)
         write_incorrect_time('static/json/incorrect_data.json', incorrect_time, "teacher")
-    except (AttributeError, IndexError, ConnectionError, FileNotFoundError, json.JSONDecodeError):
-        pass
+    except Exception as e:
+        logging.exception(e)
 
 
 def main_student(input_index, name):
@@ -193,8 +194,8 @@ def main_student(input_index, name):
                                                                        incorrect_time["student"])
         write_incorrect_time('static/json/incorrect_data.json', incorrect_time, "student")
         write_json_file('static/json/student.json', student_mas)
-    except (AttributeError, IndexError, ConnectionError, FileNotFoundError, json.JSONDecodeError):
-        pass
+    except Exception as e:
+        logging.exception(e)
 
 
 if __name__ == '__main__':

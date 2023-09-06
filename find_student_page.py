@@ -1,4 +1,6 @@
 """student group schedule"""
+import logging
+
 from bs4 import BeautifulSoup
 import requests
 
@@ -79,7 +81,8 @@ def main_student(group):
         html_main_page = BeautifulSoup(url_main_page_ru, "lxml")
         number = find_year(html_main_page, group)
         return number
-    except (requests.exceptions.Timeout, requests.exceptions.ConnectionError):
+    except Exception as e:
+        logging.exception(e)
         return None
 
 

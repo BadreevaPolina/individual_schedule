@@ -1,6 +1,7 @@
 """main page"""
 import json
 import os
+import logging
 from datetime import timedelta
 
 import requests
@@ -57,7 +58,8 @@ def find_teacher(input_form):
             return None, None, ""
         teachers_error, teachers = delete_comma(teachers_error, teachers)
         return teachers, len(teachers[:len(teachers) - 2].split(",")), teachers_error
-    except AttributeError:
+    except Exception as e:
+        logging.exception(e)
         return None, None, ""
 
 
@@ -83,7 +85,8 @@ def edit_input_students(input_form):
             elif id_student == "":
                 students_error = students_error + student.strip() + ", "
         return id_students, students_full, students_error
-    except AttributeError:
+    except Exception as e:
+        logging.exception(e)
         return "", "", ""
 
 
@@ -125,7 +128,8 @@ def get_info_incorrect_data():
             return "None"
         else:
             return result[:len(result) - 1]
-    except (AttributeError, IndexError):
+    except Exception as e:
+        logging.exception(e)
         return "None"
 
 
@@ -205,8 +209,9 @@ def timetable():
             teachers = name_teachers(request.form.get('teachers'))
             words_error = request.form.get('words_error')
             timetable_json.main_teacher(index_teachers, teachers)
-            free_time.main(session['flag_place'])
-        except (json.decoder.JSONDecodeError, TypeError):
+            free_time.main(session.get('flag_place', default=False))
+        except Exception as e:
+            logging.exception(e)
             return internal_error(505)
         incorrect_data, timetable_unchanged_json, answer_json = get_info_schedule()
         return render_template('table.html', incorrect_data=incorrect_data,
@@ -243,4 +248,13 @@ def find():
 
 
 if __name__ == '__main__':
+    log_file_path = os.environ.get("LOG_FILE")
+    if log_file_path is None:
+        print("LOG_FILE not specified")
+        exit(1)
+    print(f"LOG_FILE specified: {log_file_path}")
+    logging.basicConfig(level=logging.DEBUG, filename=log_file_path,
+                        format='%(levelname)s (%(asctime)s): %(message)s '
+                               '(Line: %(lineno)d) [%(filename)s]',
+                        datefmt='%d/%m/%Y %I:%M:%S', encoding='utf-8', filemode='w')
     app.run(port=5000, host="0.0.0.0")

@@ -1,4 +1,5 @@
 """information about suitable teachers"""
+import logging
 import re
 import json
 
@@ -103,7 +104,8 @@ def main_teacher(teacher_target):
             find_info_teachers(teachers, soup, choice)
         write_json_file('static/json/info_teacher.json', choice)
         return teacher_input, teachers_error
-    except (requests.exceptions.Timeout, requests.exceptions.ConnectionError):
+    except Exception as e:
+        logging.exception(e)
         return None, None
 
 
