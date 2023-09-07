@@ -243,8 +243,8 @@ def find():
     if request.method == "POST":
         data = request.data.decode('utf-8')
         params = parse_qs(data)
-        student = unquote_plus(params.get('student')[0])
-        teacher = unquote_plus(params.get('teacher')[0])
+        student = unquote_plus(params.get('student', [''])[0])
+        teacher = unquote_plus(params.get('teacher', [''])[0])
         flag_place = params.get('flag_place')[0]
         if flag_place is None:
             flag_place = "False"
