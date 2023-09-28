@@ -74,7 +74,29 @@ function find() {
                 window.location.href = '/individual-schedule/error?error=' + message;
             }
             else{
-                window.location.href = '/individual-schedule/error';
+                window.location.href = '/individual-schedule/error=' + "Ошибка. Попробуйте снова.";
+            }
+        }
+    });
+}
+
+
+function timetable_4_month(){
+    $.ajax({
+        url: '/individual-schedule/timetable_4_month',
+        type: 'POST',
+        contentType: "application/json; charset=utf-8",
+        dataType: 'json',
+        success: function(response) {
+            window.location.href = response.redirect;
+        },
+        error: function(jqXHR, textStatus, errorThrown) {
+            if (jqXHR.status === 500) {
+                message = jqXHR.responseJSON.message;
+                window.location.href = '/individual-schedule/error?error=' + message;
+            }
+            else{
+                window.location.href = '/individual-schedule/error=' + "Ошибка. Попробуйте снова.";
             }
         }
     });

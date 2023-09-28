@@ -32,6 +32,27 @@ h5 {
     box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
 }
 
+#four-months {
+    position: relative;
+    display: inline-block;
+}
+
+#four-months:hover::before {
+    content: "Ооочень долгая загрузка";
+    white-space: nowrap;
+    position: absolute;
+    color : #000;
+    top: 36px;
+    left: 13px;
+    text-align: center;
+    font-size: 12px;
+    font-weight: normal;
+    background-color: #f2f2f2;
+    border-color: #ddd;
+    border: 1px solid black;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
+}
+
 /*--------------------------------------------------------------
 # Calendar
 --------------------------------------------------------------*/
@@ -84,7 +105,7 @@ h5 {
 # Form
 --------------------------------------------------------------*/
 .subscribe .subscribe-form {
-    min-width: 400px;
+    min-width: 360px;
     margin-top: 0px;
     background: #fff;
     padding: 2px 10px;
@@ -115,7 +136,21 @@ h5 {
     padding-bottom: 12px;
 }
 
-.subscribe .output button[type=submit] {
+.button-4-months {
+    bottom: 0;
+    border: 0;
+    background: none;
+    font-size: 16px;
+    padding: 5px 16px;
+    background: #B5B8B1;
+    color: #fff;
+    transition: 0.3s;
+    border-radius: 50px;
+    box-shadow: 0px 2px 15px rgba(0, 0, 0, 0.1);
+    position: relative;
+}
+
+.button-standard {
 /* top: 58px;*/
     bottom: 0;
     border: 0;

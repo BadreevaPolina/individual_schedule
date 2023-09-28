@@ -23,11 +23,12 @@ function cookieNotify() {
 
 function disableSubmitButton() {
     $('form').submit(function() {
-        const submitButton = $(this).find('button[type="submit"]');
+        const submitButton = $(this).find('button[type="submit"]:focus');
         submitButton.prop('disabled', true);
         submitButton.find('.spinner-border').removeClass('d-none');
     });
 }
+
 function checkboxPlace() {
     const checkbox = document.getElementById("flexCheck");
     if(checkbox !== null){

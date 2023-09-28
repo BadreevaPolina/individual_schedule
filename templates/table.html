@@ -41,7 +41,7 @@
 <body>
 <div class="container d-flex flex-column align-items-center">
     <div class="subscribe">
-        <form action="/individual-schedule/find" method="post" role="form" onsubmit="find(); return false;">
+        <form action="/individual-schedule/find" method="post" role="form" onsubmit="return getData(this)">
             <div class="input-group input-group-spacing">
                 <div class="input-group-addon">
                     <input type="text" class="subscribe-form" name="student" autofocus="autofocus"
@@ -52,9 +52,14 @@
                 </div>
                 <div class="input-group-addon output">
                     <div class="input-group input-spacing">
-                        <div class="input-group-add">
-                            <button type="submit">
+                        <div class="input-group-add ">
+                            <button type="submit" class="button-standard">
                                 Получить данные
+                                <span class="spinner-border spinner-border-sm d-none" role="status"
+                                      aria-hidden="true"></span>
+                            </button>
+                            <button type="submit" class="button-4-months" id="four-months">
+                                4 мес.
                                 <span class="spinner-border spinner-border-sm d-none" role="status"
                                       aria-hidden="true"></span>
                             </button>
@@ -121,7 +126,7 @@
         <a class="btn accept">Понятно</a>
     </div>
 </section>
-<script src="static/js/find.js"></script>
+<script src="static/js/ajax_requests.js"></script>
 <script src="static/js/info_teacher.js"></script>
 <script src="static/js/clicked_buttons.js"></script>
 <script src="static/js/table.js"></script>

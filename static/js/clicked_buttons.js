@@ -108,3 +108,25 @@ function setAction(form) {
     }
     return false;
 }
+
+
+function getData(form) {
+    let focusedButton = $('button[type="submit"]:focus');
+    let buttonName = focusedButton.attr('class');
+
+    if (buttonName == "button-standard") {
+        find();
+        return false;
+    }
+    if (timetable_4_month == "button-4-months") {
+        timetable_4_month();
+        return false;
+    }
+    else{
+        const submitButton = $('button[type="submit"].button-standard');
+        submitButton.prop('disabled', true);
+        submitButton.find('.spinner-border').removeClass('d-none');
+        find();
+        return false;
+    }
+}

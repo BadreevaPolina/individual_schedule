@@ -1,5 +1,4 @@
 """main page"""
-import json
 import os
 import logging
 from datetime import timedelta
@@ -11,14 +10,14 @@ from flask import Flask, render_template, request, session, url_for, jsonify
 from flask_bootstrap import Bootstrap
 
 import find_student_page
-import find_teacher_json
-import free_time
-import timetable_json
+import teacher_info_manager
+import free_time_manager
+import timetable_manager
 
 app = Flask(__name__, static_url_path="/individual-schedule/static")
-app.secret_key = os.urandom(30).hex()  # 'aCYmoeg6rRHI_ifsz04D8A'
+app.secret_key = "aCYmoeg6rRHI_ifsz04D8A"
 app.permanent_session_lifetime = timedelta(days=3650)
-app.config['JSON_AS_ASCII'] = False
+app.config["JSON_AS_ASCII"] = False
 bootstrap = Bootstrap(app)
 
 
@@ -57,10 +56,12 @@ def delete_comma(error, basic):
     return error, basic
 
 
-def find_teacher(input_form):
+def find_teacher(input_form, info_teacher_instance):
     """information about teachers"""
     try:
-        teachers, teachers_error = find_teacher_json.main_teacher(input_form)
+        teachers, teachers_error, info_teacher = info_teacher_instance.main_teacher(
+            input_form
+        )
         if teachers is None:
             return None, None, ""
         teachers_error, teachers = delete_comma(teachers_error, teachers)
@@ -97,44 +98,27 @@ def edit_input_students(input_form):
         return "", "", ""
 
 
-def find_student(input_form):
+def find_student(input_form, count_weeks=4):
     """information about id student"""
     id_students, students_full, students_error = edit_input_students(input_form)
-    timetable_json.main_student(id_students, students_full.split(","))
+    session["id_students"] = (id_students, students_full.split(","))
     students_error, students_full = delete_comma(students_error, students_full)
     return students_full, students_error
 
 
-def get_info_teachers():
+def get_info_teachers(info_teacher):
     """get information from a json"""
-    with open("static/json/info_teacher.json", encoding="utf8") as file:
-        data = json.load(file)
-    json_teachers = str(data).replace("'", '"')
+    json_teachers = str(info_teacher.info_teacher).replace("'", '"')
     if json_teachers == '{"teacher": []}':
         json_teachers = "None"
     return json_teachers
 
 
-def get_info_json_file(filename):
-    with open(filename, encoding="utf8") as file:
-        data = json.load(file)
-    json_file = str(data).replace("'", '"')
-    return json_file
-
-
-def get_info_incorrect_data():
+def get_info_incorrect_data(incorrect_time):
     """get information from a json"""
-    result = ""
-    with open("static/json/incorrect_data.json", encoding="utf8") as file:
-        data = json.load(file)
     try:
-        for i in data:
-            for j in data[i]:
-                result = result + str(j) + "\n"
-        if result == "" or result == " ":
-            return "None"
-        else:
-            return result[: len(result) - 1]
+        result = "\n".join(str(j) for i in incorrect_time for j in incorrect_time[i])
+        return result if result.strip() else "None"
     except Exception as e:
         logging.exception(e)
         return "None"
@@ -142,13 +126,8 @@ def get_info_incorrect_data():
 
 def write_words_error(student_error, teacher_error):
     """combine words with mistake"""
-    if student_error != "" and teacher_error != "":
-        words_error = student_error + ", " + teacher_error
-    else:
-        words_error = student_error + teacher_error
-    if words_error == "":
-        words_error = "None"
-    return words_error
+    words_error = ", ".join(filter(None, [student_error, teacher_error]))
+    return words_error if words_error else "None"
 
 
 def timetable_work():
@@ -164,25 +143,21 @@ def timetable_work():
     return True
 
 
-def one_zero_teacher_table(flag, count_teacher):
-    """if found one teacher, show result page"""
-    with open("static/json/info_teacher.json", encoding="utf8") as file:
-        data_t = json.load(file)
-    with open("static/json/student.json", encoding="utf8") as file:
-        data_s = json.load(file)
-    if len(data_t["teacher"]) == 0 and len(data_s) >= 1:
-        timetable_json.main_teacher("", [""])
-        free_time.main(flag)
+def one_zero_teacher_table(count_teacher, info_teacher):
+    if not info_teacher["teacher"] and len(session["id_students"][0]) >= 1:
+        session["id_teachers"] = ("", [])
         return "ok"
-    indices, teachers = "", []
-    if len(data_t["teacher"]) == count_teacher:
-        for i in data_t["teacher"]:
-            if i["index"]:
-                indices = indices + i["index"] + ","
-                teachers = teachers + [i["full_name"]]
-        timetable_json.main_teacher(indices, teachers)
-        free_time.main(flag)
-        return flag
+
+    indices, teachers = [], []
+    for teacher in info_teacher["teacher"]:
+        if teacher["index"]:
+            indices.append(teacher["index"])
+            teachers.append(teacher["full_name"])
+
+    if len(teachers) == count_teacher:
+        session["id_teachers"] = (",".join(indices), teachers)
+        return "ok"
+
     return None
 
 
@@ -195,20 +170,49 @@ def name_teachers(str_teachers):
     return teachers
 
 
-def get_info_schedule():
-    incorrect_data = get_info_incorrect_data()
-    timetable_unchanged_json = get_info_json_file(
-        "static/json/timetable_unchanged.json"
+def get_info_schedule(count_weeks=4):
+    timetable_instance = timetable_manager.TimetableManager()
+    free_time_instance = free_time_manager.FreeTimeManager()
+    timetable_instance.main_student(
+        session["id_students"][0], session["id_students"][1], count_weeks
     )
-    answer_json = get_info_json_file("static/json/answer.json")
-    return incorrect_data, timetable_unchanged_json, answer_json
+    timetable_instance.main_teacher(
+        session["id_teachers"][0], session["id_teachers"][1], count_weeks
+    )
+    free_time_instance.main(session["flag_place"], timetable_instance.timetable)
+
+    incorrect_data = get_info_incorrect_data(timetable_instance.incorrect_time)
+    timetable_unchanged_result = str(
+        free_time_instance.timetable_unchanged_list
+    ).replace("'", '"')
+    answer_result = str(free_time_instance.answer_list).replace("'", '"')
+    return incorrect_data, timetable_unchanged_result, answer_result
+
+
+def delete_another_teachers(index_teachers, info_teacher_instance):
+    desired_indexes = index_teachers.split(", ")
+    filtered_teachers = [
+        teacher
+        for teacher in info_teacher_instance.info_teacher["teacher"]
+        if teacher["index"] in desired_indexes
+    ]
+    info_teacher_instance.info_teacher["teacher"] = filtered_teachers
+
+
+@app.route("/individual-schedule/timetable_4_month", methods=["GET", "POST"])
+def timetable_4_month():
+    if request.method == "POST":
+        return jsonify({"redirect": url_for("timetable", count_weeks=16)})
 
 
 @app.route("/individual-schedule/timetable", methods=["GET", "POST"])
 def timetable():
     """show result page"""
     if request.method == "GET":
-        incorrect_data, timetable_unchanged_json, answer_json = get_info_schedule()
+        count_weeks = int(request.args.get("count_weeks"))
+        incorrect_data, timetable_unchanged_json, answer_json = get_info_schedule(
+            count_weeks
+        )
         return render_template(
             "table.html",
             incorrect_data=incorrect_data,
@@ -221,12 +225,11 @@ def timetable():
             index_teachers = request.form.get("index_teachers")
             teachers = name_teachers(request.form.get("teachers"))
             words_error = request.form.get("words_error")
-            timetable_json.main_teacher(index_teachers, teachers)
-            free_time.main(session.get("flag_place", default=False))
+            session["id_teachers"] = (index_teachers, teachers)
+            incorrect_data, timetable_unchanged_json, answer_json = get_info_schedule()
         except Exception as e:
             logging.exception(e)
             return internal_error_page(500)
-        incorrect_data, timetable_unchanged_json, answer_json = get_info_schedule()
         return render_template(
             "table.html",
             incorrect_data=incorrect_data,
@@ -241,28 +244,35 @@ def timetable():
 def find():
     """show find teachers or result page"""
     if request.method == "POST":
-        data = request.data.decode('utf-8')
+        data = request.data.decode("utf-8")
         params = parse_qs(data)
-        student = unquote_plus(params.get('student', [''])[0])
-        teacher = unquote_plus(params.get('teacher', [''])[0])
-        flag_place = params.get('flag_place')[0]
-        if flag_place is None:
-            flag_place = "False"
+        student = unquote_plus(params.get("student", [""])[0])
+        teacher = unquote_plus(params.get("teacher", [""])[0])
+        flag_place = params.get("flag_place")[0]
+
         session["flag_place"] = str(flag_place)
         session["student"], session["teacher"] = student, teacher
+
+        info_teacher_instance = teacher_info_manager.TeacherInfoManager()
         student, student_error = find_student(student)
-        teacher, count_teacher, teacher_error = find_teacher(teacher)
+        teacher, count_teacher, teacher_error = find_teacher(
+            teacher, info_teacher_instance
+        )
+
         if student is None or teacher is None:
             return internal_error_page(505)
         if student == "" and teacher == "":
             if not timetable_work():
                 return timetable_error(505)
 
-        json_teachers = get_info_teachers()
+        json_teachers = get_info_teachers(info_teacher_instance)
         words_error = write_words_error(student_error, teacher_error)
-        check = one_zero_teacher_table(session["flag_place"], count_teacher)
+        check = one_zero_teacher_table(
+            count_teacher, info_teacher_instance.info_teacher
+        )
+
         if check is not None and words_error == "None":
-            return jsonify({"redirect": url_for("timetable")})
+            return jsonify({"redirect": url_for("timetable", count_weeks=4)})
         else:
             return jsonify(
                 {
