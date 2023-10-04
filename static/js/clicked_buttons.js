@@ -118,12 +118,12 @@ function getData(form) {
         find();
         return false;
     }
-    if (timetable_4_month == "button-4-months") {
+    if (buttonName == "button-4-months") {
         timetable_4_month();
         return false;
     }
     else{
-        const submitButton = $('button[type="submit"].button-standard');
+        let submitButton = $('button[type="submit"].button-standard');
         submitButton.prop('disabled', true);
         submitButton.find('.spinner-border').removeClass('d-none');
         find();

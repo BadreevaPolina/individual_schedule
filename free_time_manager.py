@@ -1,8 +1,6 @@
 """define result"""
 from datetime import datetime, timedelta
 
-from timetable_manager import TimetableManager
-
 
 def date_week(day_month):
     """find date in begin week for answer"""
@@ -283,29 +281,6 @@ class FreeTimeManager:
                                         person_i,
                                         key_list[p + 1],
                                     )
-                    if person_i == "student":
-                        if not day_check:
-                            self.change_json_free_time(
-                                person1["day_month"],
-                                person1["time_begin"],
-                                person1["time_end"],
-                                person_i,
-                                key_list[p + 1],
-                            )
-                        person2_dict_last[:] = [
-                            person2
-                            for person2 in person2_dict_last
-                            if person1["day_month"] != person2["day_month"]
-                        ]
-                if person_i == "student":
-                    for person2 in person2_dict_last:
-                        self.change_json_free_time(
-                            person2["day_month"],
-                            person2["time_begin"],
-                            person2["time_end"],
-                            person_i,
-                            key_list[p + 1],
-                        )
 
     def free_time_in_answer(self):
         """make response a free time file"""
