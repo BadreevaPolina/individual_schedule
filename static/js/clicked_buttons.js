@@ -130,3 +130,8 @@ function getData(form) {
         return false;
     }
 }
+
+function getDataMain(form){
+    find();
+    return false;
+}

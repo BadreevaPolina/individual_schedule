@@ -209,7 +209,7 @@ def timetable_4_month():
 def timetable():
     """show result page"""
     if request.method == "GET":
-        count_weeks = int(request.args.get("count_weeks"))
+        count_weeks = int(request.args.get("count_weeks")) if request.args.get("count_weeks") is not None else 4
         incorrect_data, timetable_unchanged_json, answer_json = get_info_schedule(
             count_weeks
         )
