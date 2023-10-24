@@ -57,7 +57,7 @@ class TimetableManager:
                     type_subject = type_sub[1]
                     name_subject = type_sub[0]
                 else:
-                    type_subject = type_sub
+                    type_subject = type_sub[0]
                     name_subject = ""
                 name_subjects.append(name_subject.strip().replace("\r\n", ", "))
                 type_subjects.append(type_subject.strip().replace("\r\n", ""))
