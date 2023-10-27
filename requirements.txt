@@ -2,5 +2,5 @@ flask==3.0.0
 flask-bootstrap==3.3.7.1
 beautifulsoup4==4.12.2
 bootstrap4==0.1.0
-lxml==4.9.2
+lxml==4.9.3
 requests~=2.31.0
